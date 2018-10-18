@@ -1,18 +1,11 @@
 __author__ = 'mario'
 
-LOGGING = False
-LOG_INTERVAL = 10
 
-import os
-import redis, json
+import redis, json, os
+from django.conf import settings
+os.environ['DJANGO_SETTINGS_MODULE'] = "evoi.settings"
 
-# Por que 5 iteraciones
-
-REDIS_HOST = 'REDIS_HOST' in  os.environ and  os.environ['REDIS_HOST'] or '127.0.0.1'
-REDIS_PORT = 'REDIS_PORT' in  os.environ and  os.environ['REDIS_PORT'] or '6379'
-
-
-r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
+r = redis.Redis.from_url(settings.REDIS_URL)
 
 class Individual:
     def __init__(self, **kwargs):
@@ -64,7 +57,6 @@ class Population:
         #Esta es una propiedad del EvoSpaceServer NO de la poblacion
         self.is_active = False
 
-##NOOO Aqui
     def deactivate(self):
         self.is_active = False
 
@@ -79,7 +71,12 @@ class Population:
         return r.scard(self.name)
 
     def initialize(self):
-        r.flushall()
+        # Delete all keys with pattern
+        #r.flushall()
+
+        for key in  r.keys(self.name+':*'):
+            r.delete(key)
+        r.delete(self.name)
         r.setnx(self.sample_counter,0)
         r.setnx(self.individual_counter,0)
         r.setnx(self.returned_counter,0)
@@ -87,7 +84,7 @@ class Population:
         ##NOOO Aqui
         self.is_active = True
 
-    def get_sample(self, size):
+    def take_sample(self, size):
         sample_id = r.incr(self.sample_counter)
 
         #Get keys
@@ -105,6 +102,35 @@ class Population:
         except:
             return None
         return result
+
+    def get_sample(self, size):
+        sample_id = r.incr(self.sample_counter)
+
+        sample = r.srandmember(self.name, size)
+        if None in sample:
+            sample = [s for s in sample if s]
+            if not sample:
+                return None
+        try:
+            result =  {'sample_id': self.name+":sample:%s" % sample_id ,
+                   'sample':   [Individual(id=key).get(as_dict=True) for key in sample ]}
+        except:
+            return None
+        return result
+
+    def get_all(self):
+        sample = r.smembers(self.name)
+        if None in sample:
+            sample = [s for s in sample if s]
+            if not sample:
+                return None
+        try:
+            result =  {'sample_id': 0 ,
+                       'sample':   [Individual(id=key).get(as_dict=True) for key in sample ]}
+        except:
+            return None
+        return result
+
 
     def read_sample_queue(self):
         result = r.lrange(self.sample_queue,0,-1)
@@ -126,37 +152,31 @@ class Population:
         return result
 
     def put_individual(self, **kwargs ):
-
-        #Esto debe hacerse fueran, recibe un diccionario y punto.
-        #if isinstance(from_dict,str):
-        #    from_dict = json.loads(from_dict)
-
         if kwargs['id'] is None:
             kwargs['id'] = self.name+":individual:%s" % r.incr(self.individual_counter)
         ind = Individual(**kwargs)
         ind.put(self.name)
 
-    def put_sample(self,sample, **kwargs ):
-
+    def putback_sample(self,sample, **kwargs ):
         if not isinstance(sample,dict):
             sample = json.loads(sample)
-
-        #if r.exists(sample['sample_id']):
-        #    if LOGGING:
-
         r.incr(self.returned_counter)
+        for member in sample['sample']:
+            if member['id'] is None:
+                member['id'] = self.name+":individual:%s" % r.incr(self.individual_counter)
+            self.put_individual(**member)
+        r.delete(sample['sample_id'])
+        r.lrem(self.sample_queue,sample['sample_id'])
 
-        #        if count % LOG_INTERVAL == 0 :
-        #            r.sunionstore("log:"+str(count),"pop")
-
+    def put_sample(self,sample, **kwargs ):
+        if not isinstance(sample,dict):
+            sample = json.loads(sample)
 
         for member in sample['sample']:
             if member['id'] is None:
                 member['id'] = self.name+":individual:%s" % r.incr(self.individual_counter)
             self.put_individual(**member)
-           # self.put_individual( member['id'], fitness = member['fitness'] , chromosome  = member['chromosome'])
         r.delete(sample['sample_id'])
-        r.lrem(self.sample_queue,sample['sample_id'])
 
     def respawn_sample(self, sample):
         if r.exists(sample):
@@ -181,7 +201,6 @@ class Population:
                 self.respawn_sample( r.lpop(self.sample_queue))
 
 
-
 if __name__ == "__main__":
-    pass
-
+    population = Population('pop')
+    population.initialize()

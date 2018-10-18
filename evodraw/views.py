@@ -1,9 +1,11 @@
 from django.shortcuts import render
-from lib.evospace import Population, Individual
+from evodraw.lib.evospace import Population
 # Create your views here.
 import json
 from django.http import HttpResponse
-from lib.colors import init_pop, evolve_Tournament
+from evodraw.lib.colors import init_pop, evolve_Tournament, one_like
+from django.views.decorators.http import require_http_methods
+import time;
 
 EVOLUTION_INTERVAL = 8
 REINSERT_THRESHOLD = 20
@@ -24,6 +26,13 @@ def welcome(request):
 
                                 })
 
+@require_http_methods(["POST"])
+def ilike(request):
+    one_like(request.POST['individual'], request.user.username, time.time())
+    return HttpResponse("ok", content_type='text')
+
+
+
 
 def evospace(request):
     if request.method == 'POST':
@@ -34,13 +43,13 @@ def evospace(request):
         id = json_data["id"]
 
 
-
+        print(method, params)
         if method == "initialize":
             result = population.initialize()
             data = json.dumps({"result": result, "error": None, "id": id})
             print (data)
-            return HttpResponse(data, mimetype='application/javascript')
-        elif method == "getSample":
+            return HttpResponse(data, content_type='application/javascript')
+        elif method == "get_sample":
             #Auto ReInsert
             if population.read_sample_queue_len() >= REINSERT_THRESHOLD:
                 population.respawn(5)
@@ -50,7 +59,7 @@ def evospace(request):
             else:
                 data = json.dumps({"result": None, "error":
                     {"code": -32601, "message": "EvoSpace empty"}, "id": id})
-            return HttpResponse(data, mimetype='application/json')
+            return HttpResponse(data, content_type='application/json')
         elif method == "read_pop_keys":
             result = population.read_pop_keys()
             if result:
@@ -58,7 +67,7 @@ def evospace(request):
             else:
                 data = json.dumps({"result": None, "error":
                     {"code": -32601, "message": "EvoSpace empty"}, "id": id})
-            return HttpResponse(data, mimetype='application/json')
+            return HttpResponse(data, content_type='application/json')
         elif method == "read_sample_queue":
             result = population.read_sample_queue()
             if result:
@@ -66,9 +75,9 @@ def evospace(request):
             else:
                 data = json.dumps({"result": None, "error":
                     {"code": -32601, "message": "EvoSpace empty"}, "id": id})
-            return HttpResponse(data, mimetype='application/json')
+            return HttpResponse(data, content_type='application/json')
 
-        elif method == "putSample":
+        elif method == "put_sample":
             #Cada EVOLUTION_INTERVAL evoluciona
             print ("##################")
             if not population.get_returned_counter() % EVOLUTION_INTERVAL:
@@ -127,19 +136,18 @@ def evospace(request):
             # else:
             #     print ("Usuario anonimo")
 
-            return HttpResponse(json.dumps("Success"), mimetype='application/json')
+            return HttpResponse(json.dumps("Success"), content_type='application/json')
         elif method == "init_pop":
             data = init_pop(populationSize=params[0])
-            return HttpResponse(json.dumps("Success"), mimetype='application/javascript')
+            return HttpResponse(json.dumps("Success"), content_type='application/javascript')
         elif method == "respawn":
             data = population.respawn(n=params[0])
-            return HttpResponse(json.dumps("Success"), mimetype='application/javascript')
+            return HttpResponse(json.dumps("Success"), content_type='application/javascript')
         elif method == "put_individual":
             print ( "params", params[0])
             population.put_individual(**params[0])
             data = json.dumps({"result": None, "error": None, "id": id})
-            return HttpResponse(data, mimetype='application/json')
-
+            return HttpResponse(data, content_type='application/json')
 
     else:
-        return HttpResponse("ajax & post please", mimetype='text')
+        return HttpResponse("ajax & post please", content_type='text')

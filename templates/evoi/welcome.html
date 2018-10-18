@@ -2,10 +2,14 @@
 {% block style %}
 
 
+
 {% endblock style %}
 
 
 {% block content %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
+      <script src="/static/scripts/p5.dom.js"> </script>
+      <script src="/static/scripts/vasarelly.js"> </script>
 
         <main role="main">
 
@@ -17,37 +21,16 @@
          </div>
           <div class="container">
 
-          <h1 class="jumbotron-heading">Album example</h1>
+          <h1 id="title_0" class="jumbotron-heading">Album example</h1>
           <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don't simply skip over it entirely.</p>
           <p>
-            <a href="#" class="btn btn-primary my-2">Main call to action</a>
-            <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+            <button id="get_more" type="button" class="btn btn-primary my-2">Get Another</button>
+            <button id="ilike_0" type="button"  class="btn btn-success my-2 ilike">Like</button>
           </p>
         </div>
       </section>
 
-            <div class="container">
-                <div class="card text-center">
-                    <div class="card-header">
-                        Featured
-                    </div>
-                    <div  class="card-body">
-                        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
-                        <script src="/static/scripts/p5.dom.js"> </script>
-                        <script src="/static/scripts/vasarelly.js"> </script>
-
-                        <h5 class="card-title">Special title treatment</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-
-                    </div>
-
-                    <div class="card-footer text-muted">
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="album py-5 bg-light">
+        <div class="album py-5 bg-light">
         <div class="container">
 
 
@@ -99,97 +82,7 @@
               </div>
             </div>
 
-            <div class="col-md-4">
-              <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div class="col-md-4">
-              <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -202,9 +95,105 @@
 
 
 
-{% comment %}
+
 <script type="text/javascript">
 
+
+
+
+
+$.ajaxSetup({
+         beforeSend: function(xhr, settings) {
+             function getCookie(name) {
+                 var cookieValue = null;
+                 if (document.cookie && document.cookie != '') {
+                     var cookies = document.cookie.split(';');
+                     for (var i = 0; i < cookies.length; i++) {
+                         var cookie = jQuery.trim(cookies[i]);
+                         // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         break;
+                     }
+                 }
+             }
+             return cookieValue;
+             }
+             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                 // Only send the token to relative URLs i.e. locally.
+                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+             }
+         }
+    });
+
+$("#get_more").click(function () {
+    if (sample) {
+
+    dataRequest();
+
+    }
+
+});
+
+$(".ilike").click(function () {
+    if (sample) {
+        // Get index of item from the button element, id attribute
+        // ilike_i
+        // if we split on '_' then the index  is the second element of the resulting list
+        var index = $(this)[0].id.split("_")[1];
+        var individual = sample.sample[index];
+        console.log(individual.id);
+
+        $.post( '/evolve/ilike/',{individual:individual.id})
+            .done(function(data, textStatus, jqXHR) {
+                        console.log(data);
+            });
+    }
+
+
+
+
+
+
+    });
+
+
+
+
+function dataRequest(){
+        $.ajax(
+                {
+                    url: '/EvoSpace/',
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({"jsonrpc": "2.0", "method": "get_sample", "params": [1], "id": 1 }),
+                    dataType: "json",
+                    success: function(data, textStatus, jqXHR) {
+                        //data = jQuery.parseJSON(data);
+                        sample =data.result;
+                        //Put them back
+                        $("#get_more")[0].disabled = false;
+                        $("#get_more")[0].innerHTML = "Get More";
+                        $("#title_0")[0].innerHTML = sample.sample[0].id;
+
+
+                        p5sketch.setChromosome(sample.sample[0].chromosome);
+                        p5sketch.paint();
+
+                        console.log(sample);
+                        if  (data.result == null)
+                            alert("No more paintings in evospace: respawn some samples") ;
+                        },
+                    error: function(jqXHR, textStatus, errorThrown)  {
+                        alert ("Error:" + textStatus+" "+errorThrown+" "+jqXHR.responseText);}
+                });
+    }
+
+
+
+dataRequest();
+
+{% comment %}
 $(document).ready(function () {
 
 
@@ -494,9 +483,10 @@ $(document).ready(function () {
     //setTimeout(dataRequest,5000);
 
 });
+{% endcomment %}
 </script>
 
-{% endcomment %}
+
   {% endblock scripts %}
 
 

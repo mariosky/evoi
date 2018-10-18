@@ -55,6 +55,8 @@ var s = function (sketch) {
        var triangles =[];
 
        sketch.getChromosome = function() { return chromosome; }
+       sketch.setChromosome = function(new_chromosome ) { chromosome = new_chromosome; }
+
        sketch.getPoints = function(){ return trian; }
        sketch.setup = function () {
 
@@ -85,7 +87,7 @@ var s = function (sketch) {
     // Base y altura para hacer el grid
     //
 
-    var lado = 32;
+    var lado = 48;
     var mitad = lado/2;
     var altura = sketch.int ( sketch.pow( sketch.pow( lado,2) - sketch.pow( lado/2,2), 0.5));
     var xorigen = (CANVAS_SIZE-(altura*6)) / 2;
@@ -153,7 +155,7 @@ var s = function (sketch) {
     {
         for (var j= 0; j< triangles.length; j++)
         {
-        triangles[j].display(this.pallete[chromosome[j]], sketch);
+        triangles[j].display(pallete[chromosome[j]], sketch);
         }
 
     }
@@ -161,8 +163,7 @@ var s = function (sketch) {
 
 }
 
-console.log("sketch");
-new p5(s, 'sketch-holder');
+var p5sketch = new p5(s, 'sketch-holder');
 
 
 

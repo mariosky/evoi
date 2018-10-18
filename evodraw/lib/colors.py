@@ -3,9 +3,44 @@ from operator import itemgetter
 
 __author__ = 'mariosky'
 
-import numpy, random
-from lib.evospace import Population
+import numpy
+import random
+from evodraw.lib.evospace import Population
 
+import redis
+import os
+import json
+from django.conf import settings
+
+os.environ['DJANGO_SETTINGS_MODULE'] = "evoi.settings"
+
+r = redis.Redis.from_url(settings.REDIS_URL)
+
+
+def one_like(individual_id, user, timestamp, multiple=True):
+    if multiple:
+        user = user + ':' + str(timestamp)
+    pipe = r.pipeline()
+    if pipe.zadd(individual_id+':likes', user, timestamp):
+        pipe.incr(individual_id+':views' )
+        pipe.execute()
+        return True
+    else:
+        return False
+
+
+def get_likes(individual_id):
+    return r.zcard(individual_id+':likes')
+
+
+def get_views(individual_id):
+    views = r.get(individual_id+':views')
+    views = views or 0
+    return int(views)
+
+
+def one_view(individual_id,):
+    r.incr( individual_id+':views' )
 
 
 def current_fitness(fitness):
@@ -18,11 +53,11 @@ def few_views(pop, views=2, count=2):
 
 def calc_fitness(pop):
     for ind in pop["sample"]:
-        if ind['views'] > 0:
-            ind['currentFitness'] = (int(current_fitness(ind['fitness'])) + 1) / (float(ind['views']) + 1)
-        else:
-            ind['currentFitness'] = None
-    return pop
+        likes = get_likes(ind['id'])
+        views = get_views(ind['id'])
+        ind['likes']= likes
+        ind['views'] = views
+        ind['score'] = likes
 
 
 def init_pop(populationSize, popName="pop", rangemin=0, rangemax=11, listSize=66):
@@ -34,17 +69,27 @@ def init_pop(populationSize, popName="pop", rangemin=0, rangemax=11, listSize=66
         server.put_individual(**individual)
 
 
-def get_sample(sample_size, popName="pop"):
-    server = Population(popName)
-    sample = server.get_sample(sample_size)
-    return sample
+def get_sample(population, size):
+    evospace = Population(population)
+    r = evospace.get_sample(size)
+    return r
 
 
-def put_sample(sample_id, sample, popName="pop"):
-    result = {'sample_id': sample_id, 'sample': sample}
-    server = Population(popName)
-    # server.put_sample(json.dumps(result))
-    server.put_sample(result)
+def take_sample(population, size):
+    evospace = Population(population)
+    r = evospace.take_sample(size)
+    return r
+
+
+def putback_sample(json_data, population):
+    sample = None
+    evospace = Population(population)
+    if not isinstance(json_data, dict):
+        sample = json.loads(json_data)
+    else:
+        sample = {'sample': json_data['sample'], 'sample_id': json_data['sample_id']}
+
+    evospace.putback_sample(sample)
 
 
 def crossVertical(papa, mama):
@@ -212,9 +257,6 @@ def evolve(sample_size=16):
         offspring2["views"] = 0
         offspring.extend((offspring1, offspring1))
 
-    # for individual in out:
-    #    if reprieve(individual):
-    #        offspring.append(individual)
     print('############################')
     print(len(offspring), sample_size)
     print('############################')
@@ -297,5 +339,5 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
 
 
 if __name__ == "__main__":
-    init_pop(32)
-    evolve()
+    init_pop(10)
+    #evolve()

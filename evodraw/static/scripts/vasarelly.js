@@ -1,7 +1,5 @@
 
-
-
-export class Triangle
+class Triangle
 {
 
     constructor( x1, y1, x2, y2, x3, y3)
@@ -13,30 +11,29 @@ export class Triangle
         this.x3 = x3;
         this.y3 = y3;
     }
-    display( f)
+    display( f, sketch)
     {
         //stroke(1);
-        noStroke();
+        sketch.noStroke();
         // int [] alpha = {0,127,192,192,225,255,255}  ;
         // int [] alpha = {0,0,0,0,0,255}  ;
 
         //  fill(f.hex, alpha[int(random(6) ) ]);
         //  fill(fill.hex, alpha[int(random(6) ) ]);
-        fill(f);
+        sketch.fill(f);
         //fill(pallete[int(random(11))].hex);
 
         //smooth();
-        triangle(this.x1, this.y1,this.x2, this.y2, this.x3, this.y3);
+        sketch.triangle(this.x1, this.y1,this.x2, this.y2, this.x3, this.y3);
 
     }
 
 }
 
 
-export class Vasarelly{
 
-    constructor( ) {
-        this.chromosome = [
+var s = function (sketch) {
+       var chromosome = [
         2,   2,   2,  2,  2,  2,
         2,   11,  11, 2, 2,  2,
         2,   2,   2,  2,  2,  2,
@@ -50,40 +47,39 @@ export class Vasarelly{
         2,   2,   2,  2,  2,  2
         ];
 
-        this.pallete = [];
+       var pallete = [];
 
-        this.CANVAS_SIZE = 400;
-        this.ROWS = 5;
+       var CANVAS_SIZE = 400;
+       var ROWS = 5;
 
-        this.triangles =[]
-  }
+       var triangles =[];
 
-        getChromosome() { return chromosome; }
-        getPoints() { return trian; }
-        setup()
-{
-    var canvas = createCanvas(this.CANVAS_SIZE,this.CANVAS_SIZE);
+       sketch.getChromosome = function() { return chromosome; }
+       sketch.getPoints = function(){ return trian; }
+       sketch.setup = function () {
 
-    canvas.parent('sketch-holder');
-
-    noLoop();
+           sketch.createCanvas(CANVAS_SIZE,CANVAS_SIZE);
 
 
-    append( this.pallete, color('#333333')); //Gris Oscuro
-    append( this.pallete, color('#7B2B83')); //Purple
-    append( this.pallete, color('#CCCCCC')); //Gris Claro
-    append( this.pallete, color('#AEDD3C')); //Verde
 
-    append( this.pallete, color('#00A7E5')); // Azul Cielo
-    append( this.pallete, color('#E4D5ED')); // Purple Claro
-    append( this.pallete, color('#777777')); // Gris Oscuro
-    append( this.pallete, color('#A7005B')); // Rojo
+    sketch.noLoop();
 
-    append( this.pallete, color('#000000')); //Gris Oscuro !!!
-    append( this.pallete, color('#F89829')); // Naranjita
-    append( this.pallete, color('#B31E6D')); // Rosa Claro
-    append( this.pallete, color('#FFFFFF')); // Blanco !!!
-    background(this.pallete[2]);
+
+    sketch.append( pallete, sketch.color('#333333')); //Gris Oscuro
+    sketch.append( pallete, sketch.color('#7B2B83')); //Purple
+    sketch.append( pallete, sketch.color('#CCCCCC')); //Gris Claro
+    sketch.append( pallete, sketch.color('#AEDD3C')); //Verde
+
+    sketch.append( pallete, sketch.color('#00A7E5')); // Azul Cielo
+    sketch.append( pallete, sketch.color('#E4D5ED')); // Purple Claro
+    sketch.append( pallete, sketch.color('#777777')); // Gris Oscuro
+    sketch.append( pallete, sketch.color('#A7005B')); // Rojo
+
+    sketch.append( pallete, sketch.color('#000000')); //Gris Oscuro !!!
+    sketch.append( pallete, sketch.color('#F89829')); // Naranjita
+    sketch.append( pallete, sketch.color('#B31E6D')); // Rosa Claro
+    sketch.append( pallete, sketch.color('#FFFFFF')); // Blanco !!!
+    sketch.background(pallete[2]);
 
     //
     // Base y altura para hacer el grid
@@ -91,9 +87,9 @@ export class Vasarelly{
 
     var lado = 32;
     var mitad = lado/2;
-    var altura = int ( pow( pow( lado,2) - pow( lado/2,2), 0.5));
-    var xorigen = (this.CANVAS_SIZE-(altura*6)) / 2;
-    var yorigen = ((this.CANVAS_SIZE-(altura*7)) / 2 )+mitad;
+    var altura = sketch.int ( sketch.pow( sketch.pow( lado,2) - sketch.pow( lado/2,2), 0.5));
+    var xorigen = (CANVAS_SIZE-(altura*6)) / 2;
+    var yorigen = (CANVAS_SIZE-(altura*7)) / 2 + mitad;
 
 
 
@@ -105,23 +101,23 @@ export class Vasarelly{
         for (var i = 0; i<3;i++)
         {
 
-            append( this.triangles, new Triangle(xorigen + (altura*2*i),           yorigen,
+            sketch.append( triangles, new Triangle(xorigen + (altura*2*i),           yorigen,
                 xorigen + altura + (altura*2*i),  yorigen - mitad,
                 xorigen + altura + (altura*2*i),  yorigen + mitad));
 
-            append( this.triangles, new Triangle(xorigen + (altura*2*(i+1))     ,  yorigen,
+            sketch.append( triangles, new Triangle(xorigen + (altura*2*(i+1))     ,  yorigen,
                 xorigen + altura + (altura*2*i), yorigen - mitad,
                 xorigen + altura + (altura*2*i), yorigen +mitad));
         }
 
         for (var i = 0; i<3;i++)
         {
-            append( this.triangles, new Triangle( xorigen + (altura*2*i),           yorigen,
+            sketch.append( triangles, new Triangle( xorigen + (altura*2*i),           yorigen,
                 xorigen + altura + (altura*2*i),  yorigen + mitad,
                 xorigen + (altura*2*i),           yorigen + lado
             ));
 
-            append( this.triangles, new Triangle( xorigen + altura + (altura*2*(i)) ,  yorigen +mitad ,
+            sketch.append( triangles, new Triangle( xorigen + altura + (altura*2*(i)) ,  yorigen +mitad ,
                 xorigen + (altura*2*(i+1))     ,  yorigen,
                 xorigen + (altura*2*(i+1))     ,  yorigen + lado
             ));
@@ -132,33 +128,48 @@ export class Vasarelly{
 
     for (var i = 0; i<3;i++)
     {
-        append( this.triangles, new Triangle( xorigen + (altura*2*i),           yorigen,
+        sketch.append( triangles, new Triangle( xorigen + (altura*2*i),           yorigen,
             xorigen + altura + (altura*2*i),  yorigen - mitad,
             xorigen + altura + (altura*2*i),  yorigen + mitad));
 
 
-        append( this.triangles, new Triangle(xorigen + (altura*2*(i+1))     ,  yorigen,
+        sketch.append( triangles, new Triangle(xorigen + (altura*2*(i+1))     ,  yorigen,
             xorigen + altura + (altura*2*i), yorigen - mitad,
             xorigen + altura + (altura*2*i), yorigen +mitad));
 
     }
 
     }
-draw()
-{
-    for (var j= 0; j< this.triangles.length; j++)
+
+    sketch.draw = function()
     {
-        this.triangles[j].display(this.pallete[chromosome[j]]);
+        for (var j= 0; j< triangles.length; j++)
+        {
+            triangles[j].display(pallete[chromosome[j]], sketch);
+        }
+
+    }
+    sketch.paint = function()
+    {
+        for (var j= 0; j< triangles.length; j++)
+        {
+        triangles[j].display(this.pallete[chromosome[j]], sketch);
+        }
+
     }
 
-}
-
-paint()
-{
-    for (var j= 0; j< this.triangles.length; j++)
-    {
-        this.triangles[j].display(this.pallete[chromosome[j]]);
-    }
 
 }
-}
+
+console.log("sketch");
+new p5(s, 'sketch-holder');
+
+
+
+
+
+
+
+
+
+

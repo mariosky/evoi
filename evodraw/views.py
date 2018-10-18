@@ -31,6 +31,14 @@ def ilike(request):
     one_like(request.POST['individual'], request.user.username, time.time())
     return HttpResponse("ok", content_type='text')
 
+@require_http_methods(["POST"])
+def to_collection(request):
+    if 'individual' in request.POST and 'collection' in request.POST:
+        if request.user.is_authenticated():
+            request.POST['individual']
+            request.POST['collection']
+
+
 
 
 

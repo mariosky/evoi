@@ -26,6 +26,7 @@
           <p>
             <button id="get_more" type="button" class="btn btn-primary my-2">Get Another</button>
             <button id="ilike_0" type="button"  class="btn btn-success my-2 ilike">Like</button>
+            <button id="store_0" type="button"  class="btn btn-success my-2 store">Like</button>
           </p>
         </div>
       </section>
@@ -135,6 +136,24 @@ $("#get_more").click(function () {
 
 });
 
+
+$(".store").click(function () {
+    if (sample) {
+        // Get index of item from the button element, id attribute
+        // ilike_i
+        // if we split on '_' then the index  is the second element of the resulting list
+        var index = $(this)[0].id.split("_")[1];
+        var individual = sample.sample[index];
+        console.log(individual.id);
+
+        $.post( '/evolve/ilike/',{individual:individual.id})
+            .done(function(data, textStatus, jqXHR) {
+                        console.log(data);
+            });
+    }
+    });
+
+
 $(".ilike").click(function () {
     if (sample) {
         // Get index of item from the button element, id attribute
@@ -149,11 +168,6 @@ $(".ilike").click(function () {
                         console.log(data);
             });
     }
-
-
-
-
-
 
     });
 

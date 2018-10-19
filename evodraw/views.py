@@ -39,9 +39,6 @@ def to_collection(request):
             request.POST['collection']
 
 
-
-
-
 def evospace(request):
     if request.method == 'POST':
         population = Population(popName)

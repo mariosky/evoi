@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from evodraw import views
+
 import evodraw.urls
+
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -24,8 +26,8 @@ urlpatterns = [
 
 
 
-    path(r'EvoSpace/', views.evospace, name='evospace'),
-
+    path('EvoSpace/', views.evospace, name='evospace'),
+    path('', views.welcome ),
     path('evolve/', include(evodraw.urls)),
 
     path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html')),

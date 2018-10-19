@@ -26,7 +26,19 @@
           <p>
             <button id="get_more" type="button" class="btn btn-primary my-2">Get Another</button>
             <button id="ilike_0" type="button"  class="btn btn-success my-2 ilike">Like</button>
-            <button id="store_0" type="button"  class="btn btn-success my-2 store">Like</button>
+            <div class="btn-group">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Save to
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">Separated link</a>
+  </div>
+</div>
+            <button id="store_0" type="button"  class="btn btn my-2 store" data-toggle="modal" data-target="#exampleModal" data-whatever="@mario">Store</button>
           </p>
         </div>
       </section>
@@ -89,7 +101,34 @@
       </div>
 
     </main>
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+<div class="list-group">
+  <button type="button" class="list-group-item list-group-item-action">
+    Public
+  </button>
+  <button type="button" class="list-group-item list-group-item-action">Funny </button>
+  <button type="button" class="list-group-item list-group-item-action">Monster </button>
+  <button type="button" class="list-group-item list-group-item-action">Porta ac consectetur ac </button>
+  <button type="button" class="list-group-item list-group-item-action" disabled>Vestibulum at eros </button>
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
 
   {% block scripts %}
@@ -99,7 +138,15 @@
 
 <script type="text/javascript">
 
-
+$('#exampleModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('Choose your album  ' + recipient)
+  modal.find('.modal-body input').val(recipient)
+})
 
 
 
@@ -137,21 +184,6 @@ $("#get_more").click(function () {
 });
 
 
-$(".store").click(function () {
-    if (sample) {
-        // Get index of item from the button element, id attribute
-        // ilike_i
-        // if we split on '_' then the index  is the second element of the resulting list
-        var index = $(this)[0].id.split("_")[1];
-        var individual = sample.sample[index];
-        console.log(individual.id);
-
-        $.post( '/evolve/ilike/',{individual:individual.id})
-            .done(function(data, textStatus, jqXHR) {
-                        console.log(data);
-            });
-    }
-    });
 
 
 $(".ilike").click(function () {

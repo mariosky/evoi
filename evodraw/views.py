@@ -60,7 +60,6 @@ def user_collections(request):
                            owner=request.user,
                            )
             c.save()
-
             return HttpResponse(c.id, content_type='application/json')
 
 

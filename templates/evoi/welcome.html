@@ -111,9 +111,9 @@
       <div class="modal-body">
 
 <div class="input-group mb-3">
-  <input type="text" class="form-control" placeholder="Collection Name" aria-label="Collection Name" aria-describedby="button-addon2">
+  <input id="text-add-collection" type="text" class="form-control" placeholder="Collection Name" aria-label="Collection Name" aria-describedby="button-add-collection">
   <div class="input-group-append">
-    <button class="btn btn-outline-primary" type="button" id="button-addon2">Create</button>
+    <button class="btn btn-outline-primary" type="button" id="button-add-collection">Create</button>
   </div>
 </div>
 
@@ -140,7 +140,7 @@
                  <div class="d-flex w-100  justify-content-between">
                      <h5 class="mb-1 text"> [[name]]  </h5>
                      <small class="text-muted">
-                               <button type="button"  class="btn btn-primary save_collection" data-collectionid="[[id]]" >Save </button>
+                               <button type="button"  class="btn btn-primary data-collectionid" data-collectionid="[[id]]" >Save </button>
                     </small>
                  </div>
         </li>
@@ -148,6 +148,11 @@
 
 
 <script type="text/javascript">
+
+
+
+
+
 
 $('#exampleModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal
@@ -165,6 +170,8 @@ $('#exampleModal').on('show.bs.modal', function (event) {
 
             });
 */
+
+
 
   $.get( '/evolve/collections/',{})
             .done(function(data, textStatus, jqXHR) {
@@ -247,7 +254,25 @@ $("#get_more").click(function () {
 });
 
 
+$(".save_collection").click(function () {
+    if (sample) {
+        // Get index of item from the button element, id attribute
+        // ilike_i
+        // if we split on '_' then the index  is the second element of the resulting list
 
+        console.log($(this).data('collectionid'));
+
+         $.post( '/evolve/collections/',{ name:'dfsdf'})
+            .done(function(data, textStatus, jqXHR) {
+
+                        console.log(data);
+
+
+            });
+
+    }
+
+    });
 
 $(".ilike").click(function () {
     if (sample) {

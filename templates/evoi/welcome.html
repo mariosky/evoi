@@ -12,9 +12,6 @@
       <script src="/static/scripts/vasarelly.js"> </script>
 
         <main role="main">
-
-
-
             <section class="jumbotron text-center">
                 <div id="sketch-holder"  class="container">
 
@@ -35,11 +32,12 @@
                             <button class="dropdown-item" type="button">Private</button>
                         </div>
                     </div>
-                    <button id="store_0" type="button"  class="btn btn my-2 store" data-toggle="modal" data-target="#exampleModal" data-whatever="@mario">Save to </button>
+                    <button id="store_0" type="button"  class="btn btn my-2 store" data-toggle="modal" data-target="#exampleModal">Save to </button>
                     </p>
                 </div>
             </section>
 
+        {% comment %}
         <div class="album py-5 bg-light">
         <div class="container">
 
@@ -95,6 +93,7 @@
 
           </div>
         </div>
+        {% endcomment %}
       </div>
 
     </main>
@@ -132,78 +131,27 @@
 </div>
 {% endblock content %}
 
-  {% block scripts %}
+{% block scripts %}
+    <script id="collections_template" type="x-tmpl-mustache">
 
-<script id="collections_template" type="x-tmpl-mustache">
+            <li class="list-group-item flex-column align-items-start">
+                     <div class="d-flex w-100  justify-content-between">
+                         <h5 class="mb-1 text"> [[name]]  </h5>
 
-        <li class="list-group-item list-group-item-action flex-column align-items-start">
-                 <div class="d-flex w-100  justify-content-between">
-                     <h5 class="mb-1 text"> [[name]]  </h5>
-                     <small class="text-muted">
-                               <button type="button"  class="btn btn-primary data-collectionid" data-collectionid="[[id]]" >Save </button>
-                    </small>
-                 </div>
-        </li>
-</script>
+                                   <button type="button" class="btn btn-primary add-to-collection" data-collection_id="[[id]]" >Save </button>
 
+                     </div>
+            </li>
+    </script>
 
 <script type="text/javascript">
 
-
-
-
-
-
 $('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var button = $(event.relatedTarget); // Button that triggered the modal
+  var recipient = button.data('whatever'); // Extract info from data-* attributes
+  get_collections();
 
-
-
-/*
-  $.post( '/evolve/collections/',{ name:'dfsdf'})
-            .done(function(data, textStatus, jqXHR) {
-                        console.log(data);
-
-
-            });
-*/
-
-
-
-  $.get( '/evolve/collections/',{})
-            .done(function(data, textStatus, jqXHR) {
-                        console.log(data);
-        var modal = $(this)
-
-        Mustache.tags = ['[[', ']]'];
-        var container_template = $('#collections_template').html();
-        Mustache.parse(container_template);   // optional, speeds up future uses
-        var rendered = "";
-
-        data.collections.forEach(
-             function(current_collection, index, arr) {
-
-
-                  rendered = Mustache.render(container_template, {
-                            name: current_collection.name,
-                            id: current_collection.id});
-
-                  $("#collection_list").append(rendered);
-
-             });
-
-
-
-
-            });
-
-
-  //modal.find('.modal-title').text('Choose your album  ' + recipient)
-  //modal.find('.modal-body input').val(recipient)
-})
+});
 
 
 
@@ -213,7 +161,44 @@ $('#exampleModal').on('show.bs.modal', function (event) {
 
 function get_collections(){
 
+    $.get( '/evolve/collections/',{})
+                .done(function(data, textStatus, jqXHR) {
+                            console.log(data);
 
+
+            var modal = $(this);
+            $("#collection_list").empty();
+
+            Mustache.tags = ['[[', ']]'];
+            var container_template = $('#collections_template').html();
+            Mustache.parse(container_template);   // optional, speeds up future uses
+            var rendered = "";
+
+            data.collections.forEach(
+                 function(current_collection, index, arr) {
+
+
+                      rendered = Mustache.render(container_template, {
+                                name: current_collection.name,
+                                id: current_collection.id});
+
+                      $("#collection_list").append(rendered);
+
+                 });
+
+            $(".add-to-collection").on("click",
+                function () {
+                    alert("ok");
+                    if (sample) {
+                        alert($(this).data('collection_id'));
+                        //$.post( '/evolve/collections/',{ name:$('#text-add-collection')[0].value})
+                        //    .done(function(data, textStatus, jqXHR) {
+                        //                console.log(data);
+                        //    });
+                    }
+                 }
+            );
+    });
 
     }
 
@@ -246,29 +231,27 @@ $.ajaxSetup({
 
 $("#get_more").click(function () {
     if (sample) {
-
-    dataRequest();
-
+        dataRequest();
     }
-
 });
 
 
-$(".save_collection").click(function () {
+
+
+
+$("#button-add-collection").click(function () {
     if (sample) {
         // Get index of item from the button element, id attribute
         // ilike_i
         // if we split on '_' then the index  is the second element of the resulting list
 
-        console.log($(this).data('collectionid'));
-
-         $.post( '/evolve/collections/',{ name:'dfsdf'})
+        $.post( '/evolve/collections/',{ name:$('#text-add-collection')[0].value})
             .done(function(data, textStatus, jqXHR) {
-
-                        console.log(data);
-
+                        get_collections();
 
             });
+
+
 
     }
 

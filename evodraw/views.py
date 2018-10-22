@@ -37,11 +37,9 @@ def ilike(request):
     return HttpResponse("ok", content_type='text')
 
 @require_http_methods(["POST"])
-def to_collection(request):
-    if 'individual' in request.POST and 'collection' in request.POST:
-        if request.user.is_authenticated():
-            request.POST['individual']
-            request.POST['collection']
+def user_collection(request, collection_id):
+    if request.method == 'POST' and request.user.is_authenticated and request.user != 'AnonymousUser':
+        print(request.POST['individual'])
 
 def user_collections(request):
     if request.method == 'GET' and request.user.is_authenticated and request.user != 'AnonymousUser':

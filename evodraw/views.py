@@ -3,9 +3,12 @@ from evodraw.lib.evospace import Population
 # Create your views here.
 import json
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from evodraw.models import Collection, Collection_Individual
+
 from evodraw.lib.colors import init_pop, evolve_Tournament, one_like
 from django.views.decorators.http import require_http_methods
-import time;
+import time
 
 EVOLUTION_INTERVAL = 8
 REINSERT_THRESHOLD = 20
@@ -24,7 +27,9 @@ def welcome(request):
         return render(request,'evoi/welcome.html',
                                   {'user_name': None
 
-                                })
+                          })
+
+
 
 @require_http_methods(["POST"])
 def ilike(request):
@@ -37,6 +42,26 @@ def to_collection(request):
         if request.user.is_authenticated():
             request.POST['individual']
             request.POST['collection']
+
+def user_collections(request):
+    if request.method == 'GET' and request.user.is_authenticated and request.user != 'AnonymousUser':
+        uc= Collection.objects.all().filter(owner=request.user)
+        jd = { 'collections': [{'id': col.id, 'name':col.name} for col in uc]}
+        j= json.dumps(jd)
+        return HttpResponse(j, content_type='application/json')
+
+    if request.method == 'POST' and request.user.is_authenticated and request.user != 'AnonymousUser':
+
+            # Check if they exists
+
+            c = Collection(name=request.POST['name'],
+                          # description=request.POST['description'],
+                           visibility='Public',
+                           owner=request.user,
+                           )
+            c.save()
+
+            return HttpResponse(c.id, content_type='application/json')
 
 
 def evospace(request):

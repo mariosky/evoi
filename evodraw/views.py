@@ -9,6 +9,8 @@ from evodraw.models import Collection, Collection_Individual
 from evodraw.lib.colors import init_pop, evolve_Tournament, one_like
 from django.views.decorators.http import require_http_methods
 import time
+from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 EVOLUTION_INTERVAL = 8
 REINSERT_THRESHOLD = 20
@@ -39,7 +41,17 @@ def ilike(request):
 @require_http_methods(["POST"])
 def user_collection(request, collection_id):
     if request.method == 'POST' and request.user.is_authenticated and request.user != 'AnonymousUser':
-        print(request.POST['individual'])
+        collection = Collection.objects.get(pk=collection_id)
+        ci = Collection_Individual(
+            individual_id = request.POST['individual'],
+            collection = collection,
+            added_from = None,
+            from_user = None,
+            date_added = now())
+        ci.save()
+
+        return HttpResponse(request.POST['individual'], content_type='application/json')
+
 
 def user_collections(request):
     if request.method == 'GET' and request.user.is_authenticated and request.user != 'AnonymousUser':

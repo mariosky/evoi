@@ -32,7 +32,7 @@
                             <button class="dropdown-item" type="button">Private</button>
                         </div>
                     </div>
-                    <button id="store_0" type="button"  class="btn btn my-2 store" data-toggle="modal" data-target="#exampleModal">Save to </button>
+                    <button type="button"  class="btn btn my-2 store" data-toggle="modal" data-target="#exampleModal" data-individual="0">Save to </button>
                     </p>
                 </div>
             </section>
@@ -147,9 +147,8 @@
 <script type="text/javascript">
 
 $('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget); // Button that triggered the modal
-  var recipient = button.data('whatever'); // Extract info from data-* attributes
-  get_collections();
+
+  get_collections( $(this), event);
 
 });
 
@@ -159,14 +158,17 @@ $('#exampleModal').on('show.bs.modal', function (event) {
 
 
 
-function get_collections(){
+function get_collections(modal, event ){
+
+    var button = $(event.relatedTarget);
+    var individual = button.data('individual');
 
     $.get( '/evolve/collections/',{})
                 .done(function(data, textStatus, jqXHR) {
                             console.log(data);
 
 
-            var modal = $(this);
+
             $("#collection_list").empty();
 
             Mustache.tags = ['[[', ']]'];
@@ -188,13 +190,14 @@ function get_collections(){
 
             $(".add-to-collection").on("click",
                 function () {
-                    alert("ok");
+
+                    console.log('/evolve/collection/'.concat( $(this).data('collection_id'),individual));
                     if (sample) {
-                        alert($(this).data('collection_id'));
-                        //$.post( '/evolve/collections/',{ name:$('#text-add-collection')[0].value})
-                        //    .done(function(data, textStatus, jqXHR) {
-                        //                console.log(data);
-                        //    });
+
+                        $.post('/evolve/collection/'.concat($(this).data('collection_id')), {individual:sample.sample[individual].id})
+                            .done(function(data, textStatus, jqXHR) {
+                                        console.log(data);
+                            });
                     }
                  }
             );
@@ -205,29 +208,6 @@ function get_collections(){
 
 
 
-$.ajaxSetup({
-         beforeSend: function(xhr, settings) {
-             function getCookie(name) {
-                 var cookieValue = null;
-                 if (document.cookie && document.cookie != '') {
-                     var cookies = document.cookie.split(';');
-                     for (var i = 0; i < cookies.length; i++) {
-                         var cookie = jQuery.trim(cookies[i]);
-                         // Does this cookie string begin with the name we want?
-                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                         break;
-                     }
-                 }
-             }
-             return cookieValue;
-             }
-             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-                 // Only send the token to relative URLs i.e. locally.
-                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-             }
-         }
-    });
 
 $("#get_more").click(function () {
     if (sample) {
@@ -239,7 +219,7 @@ $("#get_more").click(function () {
 
 
 
-$("#button-add-collection").click(function () {
+$("#button-add-collection").click(function (event) {
     if (sample) {
         // Get index of item from the button element, id attribute
         // ilike_i
@@ -247,7 +227,7 @@ $("#button-add-collection").click(function () {
 
         $.post( '/evolve/collections/',{ name:$('#text-add-collection')[0].value})
             .done(function(data, textStatus, jqXHR) {
-                        get_collections();
+                        get_collections($("#exampleModal"),event);
 
             });
 
@@ -305,6 +285,30 @@ function dataRequest(){
                         alert ("Error:" + textStatus+" "+errorThrown+" "+jqXHR.responseText);}
                 });
     }
+
+$.ajaxSetup({
+         beforeSend: function(xhr, settings) {
+             function getCookie(name) {
+                 var cookieValue = null;
+                 if (document.cookie && document.cookie != '') {
+                     var cookies = document.cookie.split(';');
+                     for (var i = 0; i < cookies.length; i++) {
+                         var cookie = jQuery.trim(cookies[i]);
+                         // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         break;
+                     }
+                 }
+             }
+             return cookieValue;
+             }
+             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                 // Only send the token to relative URLs i.e. locally.
+                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+             }
+         }
+    });
 
 
 

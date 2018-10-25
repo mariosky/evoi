@@ -163,7 +163,7 @@ var s = function (sketch) {
 
 }
 
-var p5sketch = new p5(s, 'sketch-holder');
+
 
 
 

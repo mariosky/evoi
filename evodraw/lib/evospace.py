@@ -107,10 +107,13 @@ class Population:
         sample_id = r.incr(self.sample_counter)
 
         sample = r.srandmember(self.name, size)
+
+        if not sample:
+            return None
+
         if None in sample:
             sample = [s for s in sample if s]
-            if not sample:
-                return None
+
         try:
             result =  {'sample_id': self.name+":sample:%s" % sample_id ,
                    'sample':   [Individual(id=key).get(as_dict=True) for key in sample ]}

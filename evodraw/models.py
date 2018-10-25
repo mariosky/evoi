@@ -11,7 +11,7 @@ class Collection(models.Model):
         )
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
-    creation_date = models.DateTimeField(default=now())
+    creation_date = models.DateTimeField(default=now)
     visibility = models.CharField(max_length=16, choices=V_TYPE)
     owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
@@ -24,4 +24,4 @@ class Collection_Individual(models.Model):
     individual_id = models.CharField(max_length=60)
     added_from = models.ForeignKey(Collection, null=True, on_delete=models.SET_NULL)
     from_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    date_added = models.DateTimeField(default=now())
+    date_added = models.DateTimeField(default=now)

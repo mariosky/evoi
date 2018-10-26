@@ -49,7 +49,7 @@ var s = function (sketch) {
 
        var pallete = [];
 
-       var CANVAS_SIZE = 400;
+       var CANVAS_SIZE = 320;
        var ROWS = 5;
 
        var triangles =[];

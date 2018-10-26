@@ -13,15 +13,30 @@
 
         <main id="main" role="main">
 
-            <section  class="jumbotron text-center">
+
+      <div class="album py-5 bg-light">
+        <div class="container">
+
+          <div  id="drawing-section" class="row">
+
+  <evo-drawing v-for="drawing in drawings" v-bind:drawing="drawing" v-bind:key="drawing.id"> </evo-drawing>
+
+            </div>
+          </div>
+        </div>
+      </div>
 
 
-                <div id="drawing-section">
-                      <evo-drawing v-for="drawing in drawings" v-bind:drawing="drawing" v-bind:key="drawing.id"> </evo-drawing>
+            <div class="container">
 
-                </div>
 
-            </section>
+
+</div>
+
+
+
+
+
 
 
 
@@ -64,7 +79,7 @@
 
 {% block scripts %}
 
-<script type="text/x-template" id="evodrawing-template">
+<script type="text/x-template" id="evodrawing-template-bak">
     <div class="container">
          <div :id="drawing.id"  class="container">
 
@@ -91,6 +106,88 @@
     </div>
     </script>
 
+
+    <script type="text/x-template" id="evodrawing-template">
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div :id="drawing.id"  class="container  mt-2">
+                </div>
+                <div class="card-body">
+                    <p class="card-text">   <small class="text-muted">[[drawing.id]]</small></p>
+
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">View Details</button>
+
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                Save
+                            </button>
+                            <div class="dropdown-menu">
+                                <button v-on:click="public" class="dropdown-item" type="button">Public</button>
+                                <button v-on:click="private" class="dropdown-item" type="button">Private</button>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="dropdown">
+                            <button class="btn btn-sm  dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="far fa-heart"></i> Love it</button>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <button class="dropdown-item" type="button"> <i class="far fa-thumbs-up"></i> thumbs up</button>
+                                <button class="dropdown-item" type="button"> <i class="far fa-heart"></i> love it</button>
+                                <button class="dropdown-item" type="button"> <i class="far fa-meh"></i> meh</button>
+                                <button class="dropdown-item" type="button"> <i class="far fa-thumbs-down"></i> thumbs up </button>
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </script>
+
+<script type="text/x-template" id="evodrawing-template-2">
+
+ <div class="container mt-2">
+
+<div class="card" style="width: 23rem;">
+   <div :id="drawing.id"  class="container  mt-2">
+   </div>
+
+  <div class="card-body">
+    <h5 class="card-title">[[drawing.name]]</h5>
+    <button id="get_more" type="button" class="btn btn-primary my-2">Get Another</button>
+            <button id="ilike_0" type="button"  class="btn btn-success my-2 ilike">Like</button>
+
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                Save to
+            </button>
+            <div class="dropdown-menu">
+                <button v-on:click="public" class="dropdown-item" type="button">Public</button>
+                <button v-on:click="private" class="dropdown-item" type="button">Private</button>
+            </div>
+
+        </div>
+
+  </div>
+</div>
+</div>
+</script>
 
 
 

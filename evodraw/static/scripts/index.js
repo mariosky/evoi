@@ -10,18 +10,13 @@ Vue.component('evo-drawing', {
                     // `this` inside methods points to the Vue instance
                     alert('Public ' + this.drawing.id + '!');
                     // `event` is the native DOM event
-
-
             },
             private: function (event) {
                 // `this` inside methods points to the Vue instance
                 alert('Private ' + this.drawing.id + '!');
                 // `event` is the native DOM event
-
             }
         }
-
-
 });
 
 

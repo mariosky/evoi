@@ -39,6 +39,15 @@ def ilike(request):
     one_like(request.POST['individual'], request.user.username, time.time())
     return HttpResponse("ok", content_type='text')
 
+
+@require_http_methods(["POST"])
+def rating(request):
+    json_data = json.loads(request.body)
+    rating(json_data['individual'],json_data['rating'], request.user.username, time.time())
+    return HttpResponse("ok", content_type='text')
+
+
+
 @require_http_methods(["POST"])
 def user_collection(request, collection_id):
     if request.method == 'POST' and request.user.is_authenticated and request.user != 'AnonymousUser':
@@ -77,8 +86,6 @@ def user_collections(request):
 @require_http_methods(["POST"])
 def add_to_collection(request):
     json_data = json.loads(request.body)
-
-    print (json_data)
     if request.user.is_authenticated and request.user != 'AnonymousUser':
         c = None
         try:

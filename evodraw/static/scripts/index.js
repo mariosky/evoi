@@ -4,6 +4,20 @@ Vue.component('evo-drawing', {
   props: ['drawing'],
   template:"#evodrawing-template",
   delimiters: ['[[', ']]'],
+  computed: {
+      rating_text: function () {
+          if (this.current_rating == 0)
+                return "Rate this";
+          else
+                return this.current_rating.toString() + " stars";
+
+    }
+    },
+  data:function () {
+    return {
+      current_rating: 0
+    }
+  },
   methods:
         {
             public: function (event) {
@@ -23,6 +37,17 @@ Vue.component('evo-drawing', {
                             alert( this.drawing.id + ' saved to private');
 
                     });
+            },
+
+            rating: function (rating) {
+                console.log(this.current_rating);
+                this.current_rating = rating ;
+                /*   add_rating('/evolve/add_rating/',  this.drawing.id, rating)
+                        .then(data => {
+                            console.log(data);
+                            alert( this.drawing.id + ' saved to private');
+
+                    });*/
             }
         }
 });
@@ -39,7 +64,23 @@ var app = new Vue({
 });
 
 
+async function add_rating(endpoint, individual_id, rating)
+{
+    const options = {
+        method: 'POST',
+        body: JSON.stringify({individual_id: individual_id, rating:rating}),
+        headers: {
+            "X-CSRFToken": getCookie('csrftoken'),
+            'Content-Type': 'application/json'
 
+        }
+    }
+    const res = await fetch(endpoint , options);
+    let data = await res.json();
+
+  return data.result;
+
+}
 
 
 

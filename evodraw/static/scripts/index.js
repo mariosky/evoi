@@ -7,14 +7,22 @@ Vue.component('evo-drawing', {
   methods:
         {
             public: function (event) {
-                    // `this` inside methods points to the Vue instance
-                    alert('Public ' + this.drawing.id + '!');
-                    // `event` is the native DOM event
+                add_to_collection('/evolve/add_to_collection/', this.drawing.id, 'Public')
+                    .then(data => {
+                            console.log(data);
+                            alert( this.drawing.id + ' saved to public');
+
+                    });
+
+
             },
             private: function (event) {
-                // `this` inside methods points to the Vue instance
-                alert('Private ' + this.drawing.id + '!');
-                // `event` is the native DOM event
+                    add_to_collection('/evolve/add_to_collection/', this.drawing.id, 'Private')
+                    .then(data => {
+                            console.log(data);
+                            alert( this.drawing.id + ' saved to private');
+
+                    });
             }
         }
 });
@@ -55,8 +63,6 @@ function getCookie(name) {
 }
 
 
-
-
 async function fetchCollections(endpoint) {
   const res = await fetch(endpoint);
   let data = await res.json();
@@ -70,8 +76,6 @@ fetchCollections('/evolve/collections/')
   .then(data => {
     console.log(data);
   });
-
-
 
 
 async function getSample(endpoint, sample_size)
@@ -94,4 +98,21 @@ async function getSample(endpoint, sample_size)
 }
 
 
+async function add_to_collection(endpoint, individual_id, name)
+{
+    const options = {
+        method: 'POST',
+        body: JSON.stringify({individual_id: individual_id, collection_name:name}),
+        headers: {
+            "X-CSRFToken": getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+
+        }
+    }
+    const res = await fetch(endpoint , options);
+    let data = await res.json();
+
+  return data.result;
+
+}
 

@@ -11,6 +11,7 @@ from django.views.decorators.http import require_http_methods
 import time
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.core.exceptions import ObjectDoesNotExist
 
 EVOLUTION_INTERVAL = 8
 REINSERT_THRESHOLD = 20
@@ -54,7 +55,7 @@ def user_collection(request, collection_id):
 
 
 def user_collections(request):
-    if request.method == 'GET' and request.user.is_authenticated and request.user != 'AnonymousUser':
+    if request.user.is_authenticated and request.user != 'AnonymousUser':
         uc= Collection.objects.all().filter(owner=request.user)
         jd = { 'collections': [{'id': col.id, 'name':col.name} for col in uc]}
         j= json.dumps(jd)
@@ -71,6 +72,31 @@ def user_collections(request):
                            )
             c.save()
             return HttpResponse(c.id, content_type='application/json')
+
+
+@require_http_methods(["POST"])
+def add_to_collection(request):
+    json_data = json.loads(request.body)
+
+    print (json_data)
+    if request.user.is_authenticated and request.user != 'AnonymousUser':
+        c = None
+        try:
+            c = Collection.objects.filter(name=json_data['collection_name'],visibility=json_data['collection_name'],
+                           owner=request.user).get()
+
+        except ObjectDoesNotExist:
+            print('ObjectDoesNotExist')
+            c =  Collection.objects.create(name=json_data['collection_name'],visibility='Public',
+                                           owner=request.user,
+                                           )
+            c.save()
+        Collection_Individual.objects.create(collection=c, individual_id=json_data['individual_id'])
+
+        return HttpResponse({}, content_type='application/json')
+    else:
+        return HttpResponse({}, content_type='application/json')
+
 
 
 def evospace(request):

@@ -28,6 +28,17 @@ def one_like(individual_id, user, timestamp, multiple=True):
     else:
         return False
 
+def rating(individual_id, rating, user, timestamp, multiple=True):
+    if multiple:
+        user = user + ':' + str(timestamp)
+    pipe = r.pipeline()
+    if pipe.zadd(individual_id+':ratings', rating , user):
+        pipe.incr(individual_id+':views' )
+        pipe.execute()
+        return True
+    else:
+        return False
+
 
 def get_likes(individual_id):
     return r.zcard(individual_id+':likes')
@@ -263,8 +274,7 @@ def evolve(sample_size=16):
 
     print('############################')
 
-
-    put_sample(sample["sample_id"], offspring)
+    putback_sample(sample["sample_id"], offspring)
 
 
 def evolve_Tournament(sample_size=6, mutation_rate=0.3):
@@ -281,10 +291,9 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
         # each must have a minimum of two individuals with at least 2 views each (DEFAULTS)
     # if not return both samples unchanged
     if few_views(sample_mama) or few_views(sample_papa):
-        put_sample(sample_mama["sample_id"], sample_mama["sample"])
-        put_sample(sample_papa["sample_id"], sample_papa["sample"])
-        print
-        "few", few_views(sample_mama), few_views(sample_papa)
+        putback_sample(sample_mama["sample_id"], sample_mama["sample"])
+        putback_sample(sample_papa["sample_id"], sample_papa["sample"])
+        print ("few", few_views(sample_mama), few_views(sample_papa))
         return
 
     # Add currentFitness to individuals
@@ -303,8 +312,7 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
     offspring1, offspring2 = random.choice(crossFunctions)(papa, mama)
     offspring1["views"] = 0
     offspring2["views"] = 0
-    print
-    offspring1
+    print (offspring1)
 
     if random.random() <= mutation_rate:
         if random.random() <= .20:
@@ -312,8 +320,7 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
             mut_shuffle(offspring2)
             offspring1["mutation"] = "shuffle"
             offspring2["mutation"] = "shuffle"
-            print
-            "shuffle"
+            print ("shuffle")
 
         else:
             # range random?
@@ -334,8 +341,8 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
     sample_mama["sample"].append(offspring1)
     sample_papa["sample"].append(offspring2)
 
-    put_sample(sample_mama["sample_id"], sample_mama["sample"])
-    put_sample(sample_papa["sample_id"], sample_papa["sample"])
+    putback_sample(sample_mama["sample_id"], sample_mama["sample"])
+    putback_sample(sample_papa["sample_id"], sample_papa["sample"])
 
 
 if __name__ == "__main__":

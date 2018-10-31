@@ -42,12 +42,12 @@ Vue.component('evo-drawing', {
             rating: function (rating) {
                 console.log(this.current_rating);
                 this.current_rating = rating ;
-                /*   add_rating('/evolve/add_rating/',  this.drawing.id, rating)
+                add_rating('/evolve/add_rating/', this.drawing.id, rating)
                         .then(data => {
-                            console.log(data);
+                            console.log(this.drawing.id, rating );
                             alert( this.drawing.id + ' saved to private');
 
-                    });*/
+                    });
             }
         }
 });

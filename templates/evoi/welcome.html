@@ -14,8 +14,37 @@
         <main id="main" role="main">
 
 
+
+
+
+
       <div class="album py-5 bg-light">
         <div class="container">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#">Evaluation</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarText">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">My Albums</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Population</a>
+                        </li>
+                        <li class="nav-item">
+                          <button type="button" class="btn btn-secondary btn-sm">Evolve</button>
+
+                        </li>
+                    </ul>
+                    <button id="get_more" type="button" class="btn btn-primary btn-sm">Get more</button>
+
+                </div>
+            </nav>
+
+
+
 
           <div  id="drawing-section" class="row">
 
@@ -152,75 +181,27 @@
 
 
 
-
-
-$('#exampleModal').on('show.bs.modal', function (event) {
-
-  get_collections( $(this), event);
-
-});
-
-
-
-
-
-
-
-function get_collections(modal, event ){
-
-    var button = $(event.relatedTarget);
-    var individual = button.data('individual');
-
-    $.get( '/evolve/collections/',{})
-                .done(function(data, textStatus, jqXHR) {
-                            console.log(data);
-
-
-
-            $("#collection_list").empty();
-
-            Mustache.tags = ['[[', ']]'];
-            var container_template = $('#collections_template').html();
-            Mustache.parse(container_template);   // optional, speeds up future uses
-            var rendered = "";
-
-            data.collections.forEach(
-                 function(current_collection, index, arr) {
-
-
-                      rendered = Mustache.render(container_template, {
-                                name: current_collection.name,
-                                id: current_collection.id});
-
-                      $("#collection_list").append(rendered);
-
-                 });
-
-            $(".add-to-collection").on("click",
-                function () {
-
-                    console.log('/evolve/collection/'.concat( $(this).data('collection_id'),individual));
-                    if (sample) {
-
-                        $.post('/evolve/collection/'.concat($(this).data('collection_id')), {individual:sample.sample[individual].id})
-                            .done(function(data, textStatus, jqXHR) {
-                                        console.log(data);
-                            });
-                    }
-                 }
-            );
-    });
-
-    }
-
-
-
-
-
 $("#get_more").click(function () {
-    if (sample) {
-    //    dataRequest();
-    }
+                    app.drawings =  [];
+
+
+        getSample('/EvoSpace/', 3)
+            .then(sample => {
+                sample.sample.forEach(function (element) {
+
+
+                    app.drawings.push(element);
+
+                    // We need to wait until the cards and
+                    // canvas targets are rendered.
+                    Vue.nextTick(function () {
+                         var temp =  new p5(s, element.id);
+                                temp.setChromosome(element.chromosome);
+                                temp.paint();
+                                });
+                    });
+            });
+
 });
 
 
@@ -261,24 +242,26 @@ $(".ilike").click(function () {
 
 
 
-
-//dataRequest();
-
 getSample('/EvoSpace/', 3)
   .then(sample => {
         sample.sample.forEach(function(element) {
         app.drawings.push(element);
+        Vue.nextTick(function () {
 
-        var temp =  new p5(s, element.id);
-        temp.setChromosome(element.chromosome);
-        temp.paint();
+          var temp =  new p5(s, element.id);
+                temp.setChromosome(element.chromosome);
+                temp.paint();
+                });
+
+        });
 
 
-});
-       // console.log(sample.sample );
-        //app.drawings.push({id: "pop:individual:5",name:"mario" });
 
   });
+
+
+
+
 
 
 

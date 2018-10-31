@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.welcome, name='welcome'),
     path('ilike/', views.ilike, name="ilike"),
     path('add_to_collection/', views.add_to_collection, name="add_to_collection"),
+    path('add_rating/', views.rating, name="rating"),
     path('collections/', views.user_collections, name="user_collections"),
     path('collection/<str:collection_id>', views.user_collection, name="user_collection"),
 

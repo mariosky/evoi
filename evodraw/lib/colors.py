@@ -28,12 +28,9 @@ def one_like(individual_id, user, timestamp, multiple=True):
     else:
         return False
 
-def rating(individual_id, rating, user, timestamp, multiple=True):
-    if multiple:
-        user = user + ':' + str(timestamp)
+def add_rating(individual_id, rating, user, timestamp):
     pipe = r.pipeline()
-    if pipe.zadd(individual_id+':ratings', rating , user):
-        pipe.incr(individual_id+':views' )
+    if pipe.zadd(individual_id+':ratings', user, rating ):
         pipe.execute()
         return True
     else:

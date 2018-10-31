@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from evodraw.models import Collection, Collection_Individual
 
-from evodraw.lib.colors import init_pop, evolve_Tournament, one_like
+from evodraw.lib.colors import init_pop, evolve_Tournament, one_like, add_rating
 from django.views.decorators.http import require_http_methods
 import time
 from django.contrib.auth.models import User
@@ -43,7 +43,7 @@ def ilike(request):
 @require_http_methods(["POST"])
 def rating(request):
     json_data = json.loads(request.body)
-    rating(json_data['individual'],json_data['rating'], request.user.username, time.time())
+    add_rating(individual_id = json_data['individual_id'],rating = json_data['rating'],user= request.user.username, timestamp = time.time(), )
     return HttpResponse("ok", content_type='text')
 
 

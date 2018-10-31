@@ -4,13 +4,8 @@ Vue.component('evo-drawing', {
   template:"#evodrawing-template",
   delimiters: ['[[', ']]'],
   computed: {
-      rating_text: function () {
-          if (this.current_rating == 0)
-                return "Rate this";
-          else
-                return this.current_rating.toString() + " stars";
 
-    }
+
     },
   data:function () {
     return {
@@ -57,28 +52,12 @@ var app = new Vue({
     el: '#drawing-section',
     data: {
         drawings: [],
-        sample_size:3
+
     }
 });
 
 
-async function add_rating(endpoint, individual_id, rating)
-{
-    const options = {
-        method: 'POST',
-        body: JSON.stringify({individual_id: individual_id, rating:rating}),
-        headers: {
-            "X-CSRFToken": getCookie('csrftoken'),
-            'Content-Type': 'application/json'
 
-        }
-    }
-    const res = await fetch(endpoint , options);
-    let data = await res.json();
-
-  return data.result;
-
-}
 
 function getCookie(name) {
   if (!document.cookie) {
@@ -97,24 +76,13 @@ function getCookie(name) {
 }
 
 
-async function fetchCollections(endpoint) {
-  const res = await fetch(endpoint);
-  let data = await res.json();
 
-  data = data.collections.map(collection => collection.name);
-  return data;
-
-}
-
-
-
-async function getSample(endpoint, sample_size)
+async function getAlbum(endpoint)
 {
     const options = {
-        method: 'POST',
-        body: JSON.stringify({"jsonrpc": "2.0", "method": "get_sample", "params": [sample_size], "id": 1 }),
+        method: 'GET',
         headers: {
-            "X-CSRFToken": getCookie('csrftoken'),
+            //"X-CSRFToken": getCookie('csrftoken'),
             'Content-Type': 'application/json'
 
         }
@@ -123,26 +91,9 @@ async function getSample(endpoint, sample_size)
     let data = await res.json();
 
  // data = data.collections.map(collection => collection.name);
-  return data.result;
+  return data;
 
 }
 
 
-async function add_to_collection(endpoint, individual_id, name)
-{
-    const options = {
-        method: 'POST',
-        body: JSON.stringify({individual_id: individual_id, collection_name:name}),
-        headers: {
-            "X-CSRFToken": getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-
-        }
-    }
-    const res = await fetch(endpoint , options);
-    let data = await res.json();
-
-  return data.result;
-
-}
 

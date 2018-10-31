@@ -1,0 +1,103 @@
+{% extends "evoi/base.html" %}
+{% block style %}
+
+{% endblock style %}
+
+
+{% block content %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
+      <script src="/static/scripts/p5.dom.js"> </script>
+      <script src="/static/scripts/vasarelly.js"> </script>
+
+      <main id="main" role="main">
+          <div class="album py-5 bg-light">
+              <div class="container">
+                  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                      <a class="navbar-brand" href="#">My Album</a>
+                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                          <span class="navbar-toggler-icon"></span>
+                      </button>
+
+                  </nav>
+
+
+
+
+                  <div  id="drawing-section" class="row">
+
+                      <evo-drawing v-for="drawing in drawings" v-bind:drawing="drawing"  v-bind:key="drawing.id"> </evo-drawing>
+
+                  </div>
+              </div>
+          </div>
+          </div>
+
+
+          <div class="container">
+          </div>
+
+    </main>
+{% endblock content %}
+
+
+{% block scripts %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="/static/scripts/album.js"></script>
+
+
+
+    <script type="text/x-template" id="evodrawing-template">
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div :id="drawing.id"  class="container  mt-2">
+                </div>
+                <div class="card-body">
+                    <p class="card-text">   <small class="text-muted">[[drawing.id]]</small></p>
+
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">View Details</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Remove</button>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </script>
+
+
+
+    <script>
+
+    getAlbum('/evolve/get_my_album/')
+        .then(sample => {
+
+            console.log(sample);
+
+       sample.data.forEach(function(element) {
+        app.drawings.push(element);
+        Vue.nextTick(function () {
+
+          var temp =  new p5(s, element.id);
+                temp.setChromosome(element.chromosome);
+                temp.paint();
+                });
+
+        });
+
+
+
+  });
+
+    </script>
+
+{% endblock scripts %}

@@ -5,7 +5,7 @@ import json
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from evodraw.models import Collection, Collection_Individual
-
+from evodraw.lib.evospace import Individual
 from evodraw.lib.colors import init_pop, evolve_Tournament, one_like, add_rating
 from django.views.decorators.http import require_http_methods
 import time
@@ -19,8 +19,6 @@ popName = 'pop'
 
 
 def welcome(request):
-    print(request.user)
-
     if request.user.is_authenticated and request.user != 'AnonymousUser':
         return render(request,
                       'evoi/welcome.html',
@@ -31,6 +29,16 @@ def welcome(request):
                                   {'user_name': None
 
                           })
+
+def album(request):
+    if request.user.is_authenticated and request.user != 'AnonymousUser':
+        return render(request,
+                      'evoi/album.html',
+                                   { 'user':  request.user                                  # , 'plus_scope':plus_scope,'plus_id':plus_id
+                                   } )
+    else:
+        return render(request,'evoi/album.html',
+                                  {'user_name': None })
 
 
 
@@ -83,8 +91,56 @@ def user_collections(request):
             return HttpResponse(c.id, content_type='application/json')
 
 
+
+
+@require_http_methods(["GET"])
+def get_my_album(request):
+    if request.user.is_authenticated and request.user != 'AnonymousUser':
+        c = None
+        try:
+            c = Collection_Individual.objects.filter(collection__owner=request.user)
+
+        except ObjectDoesNotExist:
+            print('ObjectDoesNotExist')
+
+
+        individuals = [Individual(id=i.individual_id).get(as_dict=True) for i in c]
+        result = json.dumps({'data':individuals})
+
+
+        return HttpResponse(result, content_type='application/json')
+    else:
+        return HttpResponse({}, content_type='application/json')
+
+
+
+
 @require_http_methods(["POST"])
 def add_to_collection(request):
+    json_data = json.loads(request.body)
+    if request.user.is_authenticated and request.user != 'AnonymousUser':
+        c = None
+        try:
+            c = Collection.objects.filter(name="MyAlbum",visibility=json_data['collection_name'],
+                           owner=request.user).get()
+
+        except ObjectDoesNotExist:
+            print('ObjectDoesNotExist')
+            c =  Collection.objects.create(name="MyAlbum",visibility=json_data['collection_name'],
+                                           owner=request.user,
+                                           )
+            c.save()
+
+        #IF DOES NOT EXISTS
+        Collection_Individual.objects.update_or_create(collection=c, individual_id=json_data['individual_id'])
+
+        return HttpResponse({}, content_type='application/json')
+    else:
+        return HttpResponse({}, content_type='application/json')
+
+
+@require_http_methods(["POST"])
+def remove_from_collection(request):
     json_data = json.loads(request.body)
     if request.user.is_authenticated and request.user != 'AnonymousUser':
         c = None
@@ -94,7 +150,7 @@ def add_to_collection(request):
 
         except ObjectDoesNotExist:
             print('ObjectDoesNotExist')
-            c =  Collection.objects.create(name=json_data['collection_name'],visibility='Public',
+            c =  Collection.objects.create(name=json_data['collection_name'],visibility=json_data['collection_name'],
                                            owner=request.user,
                                            )
             c.save()
@@ -103,7 +159,6 @@ def add_to_collection(request):
         return HttpResponse({}, content_type='application/json')
     else:
         return HttpResponse({}, content_type='application/json')
-
 
 
 def evospace(request):

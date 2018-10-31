@@ -21,25 +21,27 @@
       <div class="album py-5 bg-light">
         <div class="container">
                         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#">Evaluation</a>
+                <a class="navbar-brand" href="#">Rate the population</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarText">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item active">
-                            <a class="nav-link" href="#">My Albums</a>
+                            <a class="nav-link" href="/evolve/album/">My Album</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Population</a>
                         </li>
-                        <li class="nav-item">
-                          <button type="button" class="btn btn-secondary btn-sm">Evolve</button>
 
-                        </li>
                     </ul>
-                    <button id="get_more" type="button" class="btn btn-primary btn-sm">Get more</button>
 
+                    <div>
+                        <input id="sample_size_input" type="number" min="1" max="99" value="3" class=""> </input>
+                        <button id="get_more" type="button" class="btn btn-primary btn-sm">Get more</button>
+                        <button type="button" class="btn btn-secondary btn-sm">Evolve</button>
+
+                    </div>
                 </div>
             </nav>
 
@@ -157,35 +159,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="/static/scripts/index.js"></script>
+    <script type="text/javascript">
 
+    $("#get_more").click(function () {
 
+       var sample_size = parseInt( $("#sample_size_input")[0].value);
 
-
-    <script id="collections_template" type="x-tmpl-mustache">
-
-            <li class="list-group-item flex-column align-items-start">
-                     <div class="d-flex w-100  justify-content-between">
-                         <h5 class="mb-1 text"> [[name]]  </h5>
-
-                                   <button type="button" class="btn btn-primary add-to-collection" data-collection_id="[[id]]" >Save </button>
-
-                     </div>
-            </li>
-    </script>
-
-
-
-
-
-<script type="text/javascript">
-
-
-
-$("#get_more").click(function () {
                     app.drawings =  [];
 
 
-        getSample('/EvoSpace/', 3)
+        getSample('/EvoSpace/', sample_size)
             .then(sample => {
                 sample.sample.forEach(function (element) {
 
@@ -242,8 +225,9 @@ $(".ilike").click(function () {
 
 
 
-getSample('/EvoSpace/', 3)
+getSample('/EvoSpace/', parseInt( $("#sample_size_input")[0].value))
   .then(sample => {
+
         sample.sample.forEach(function(element) {
         app.drawings.push(element);
         Vue.nextTick(function () {

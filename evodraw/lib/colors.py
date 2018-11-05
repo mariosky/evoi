@@ -13,7 +13,7 @@ import json
 from django.conf import settings
 
 os.environ['DJANGO_SETTINGS_MODULE'] = "evoi.settings"
-
+MINIMUM_VIEWS = False
 r = redis.Redis.from_url(settings.REDIS_URL)
 
 
@@ -46,26 +46,36 @@ def get_views(individual_id):
     views = views or 0
     return int(views)
 
+def get_ratings(individual_id):
+    ratings = r.zrange(individual_id + ':ratings',0,-1,withscores=True)
+    ratings = ratings or []
+    return ratings
+
+
 
 def one_view(individual_id,):
     r.incr( individual_id+':views' )
 
 
-def current_fitness(fitness):
-    return sum([fitness[k] for k in fitness])
+def current_fitness(ratings, views):
+    # We only return a simple average rating and number of votes
+    if (len(ratings)):
+        return (sum([ratings for user, ratings  in ratings])/len(ratings), len(ratings))
+    else:
+        return (2, 2)
 
 
 def few_views(pop, views=2, count=2):
     return sum([1 for i in pop["sample"] if i["views"] >= views]) < count
 
 
-def calc_fitness(pop):
+def update_fitness(pop):
     for ind in pop["sample"]:
-        likes = get_likes(ind['id'])
+        ratings = get_ratings(ind['id'])
+        # Example: [(b'mariosky', 2.0), (b'paco', 2.0), (b'juan', 4.0)]
         views = get_views(ind['id'])
-        ind['likes']= likes
-        ind['views'] = views
-        ind['score'] = likes
+        print(ind['id'],ratings,views)
+        ind['current_fitness'] = current_fitness( ratings, views )[0] # average rating, number of ratings
 
 
 def init_pop(populationSize, popName="pop", rangemin=0, rangemax=11, listSize=66):
@@ -73,13 +83,13 @@ def init_pop(populationSize, popName="pop", rangemin=0, rangemax=11, listSize=66
     server.initialize()
     for individual in range(populationSize):
         chrome = [random.randint(rangemin, rangemax) for _ in range(listSize)]
-        individual = {"id": None, "fitness": {"DefaultContext": 0.0}, "chromosome": chrome, "views": 0}
+        individual = {"id": None, "fitness": 0.0, "chromosome": chrome, "views": 0}
         server.put_individual(**individual)
 
 
-def get_sample(population, size):
+def get_sample(population="pop", size= 16):
     evospace = Population(population)
-    r = evospace.get_sample(size)
+    r = evospace.take_sample(size)
     return r
 
 
@@ -89,9 +99,9 @@ def take_sample(population, size):
     return r
 
 
-def putback_sample(json_data, population):
+def putback_sample(json_data, population_name='pop'):
     sample = None
-    evospace = Population(population)
+    evospace = Population(population_name)
     if not isinstance(json_data, dict):
         sample = json.loads(json_data)
     else:
@@ -239,70 +249,43 @@ def reprieve(individual):
         return False
 
 
-def evolve(sample_size=16):
-    sample = get_sample(sample_size)
-    pop = calc_fitness(sample)
-    print(pop)
-    if len([individual for individual in pop['sample'] if individual['currentFitness']]):
-        pop["sample"].sort(key=itemgetter('currentFitness'), reverse=True)
-    else:
-        print ("Not possible")
-        return None
-
-    for i in pop["sample"]:
-        print(i["id"], i["currentFitness"],)
-        if "views" in i.keys():
-            print(i["views"])
-
-    offspring = pop["sample"][:sample_size / 2]
-    out = pop["sample"][sample_size / 2:]
-
-    # crossFunctions = [crossVertical]
-    crossFunctions = [crossVertical, crossHorizontal, crossMirrorH, crossMirrorV, crossMirrorH, crossMirrorV]
-    for papa, mama in zip(offspring[::2], offspring[1::2]):
-        offspring1, offspring2 = random.choice(crossFunctions)(papa, mama)
-        offspring1["views"] = 0
-        offspring2["views"] = 0
-        offspring.extend((offspring1, offspring1))
-
-    print('############################')
-    print(len(offspring), sample_size)
-    print('############################')
-
-    print('############################')
-
-    putback_sample(sample["sample_id"], offspring)
-
 
 def evolve_Tournament(sample_size=6, mutation_rate=0.3):
     # get two samples from evospace
-    sample_papa = get_sample(sample_size)
+    sample_papa = get_sample(size=sample_size)
     # if None evospace empty? just return
     if not sample_papa:
         return
-    sample_mama = get_sample(sample_size)
+
+    sample_mama = get_sample(size=sample_size)
 
     if not sample_mama:
         return
 
-        # each must have a minimum of two individuals with at least 2 views each (DEFAULTS)
+    # each must have a minimum of two individuals with at least 2 views each (DEFAULTS)
     # if not return both samples unchanged
-    if few_views(sample_mama) or few_views(sample_papa):
-        putback_sample(sample_mama["sample_id"], sample_mama["sample"])
-        putback_sample(sample_papa["sample_id"], sample_papa["sample"])
-        print ("few", few_views(sample_mama), few_views(sample_papa))
-        return
+    if (MINIMUM_VIEWS):
+        if few_views(sample_mama) or few_views(sample_papa):
+            putback_sample(sample_mama["sample_id"], sample_mama["sample"])
+            putback_sample(sample_papa["sample_id"], sample_papa["sample"])
+            print ("few", few_views(sample_mama), few_views(sample_papa))
+            return
 
     # Add currentFitness to individuals
-    sample_papa = calc_fitness(sample_papa)
-    sample_mama = calc_fitness(sample_mama)
+    update_fitness(sample_papa)
+    update_fitness(sample_mama)
+
+    print(sample_papa)
     # get the best, first_parent
-    sample_papa["sample"].sort(key=itemgetter('currentFitness'), reverse=True)
+    sample_papa["sample"].sort(key=itemgetter('current_fitness'), reverse=True)
     papa = sample_papa["sample"][0]
+    print(papa)
 
     # get the best, second_parent
-    sample_mama["sample"].sort(key=itemgetter('currentFitness'), reverse=True)
+    sample_mama["sample"].sort(key=itemgetter('current_fitness'), reverse=True)
     mama = sample_mama["sample"][0]
+    print(mama)
+
     # crossFunctions = [crossVertical]
     crossFunctions = [crossVertical, crossHorizontal, crossMirrorH, crossMirrorV, crossMirrorH, crossMirrorV]
 
@@ -328,20 +311,26 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
                 offspring2["mutation"] = "replace"
             print ( "replace")
 
-    worst_mama = min([a for a in sample_mama["sample"] if a["currentFitness"] is not None],
-                     key=itemgetter('currentFitness'))
-    worst_papa = min([a for a in sample_papa["sample"] if a["currentFitness"] is not None],
-                     key=itemgetter('currentFitness'))
+    worst_mama = min([a for a in sample_mama["sample"] if a["current_fitness"] is not None],
+                     key=itemgetter('current_fitness'))
+    worst_papa = min([a for a in sample_papa["sample"] if a["current_fitness"] is not None],
+                     key=itemgetter('current_fitness'))
+
+    print('worst',worst_mama,worst_papa )
     sample_mama["sample"].remove(worst_mama)
     sample_papa["sample"].remove(worst_papa)
+
 
     sample_mama["sample"].append(offspring1)
     sample_papa["sample"].append(offspring2)
 
-    putback_sample(sample_mama["sample_id"], sample_mama["sample"])
-    putback_sample(sample_papa["sample_id"], sample_papa["sample"])
+    print(sample_mama["sample_id"], sample_mama["sample"])
+
+    putback_sample(sample_mama)
+    putback_sample(sample_papa)
 
 
 if __name__ == "__main__":
-    init_pop(10)
+    #init_pop(18)
+    evolve_Tournament()
     #evolve()

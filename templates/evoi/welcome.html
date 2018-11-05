@@ -18,47 +18,45 @@
 
 
 
-      <div class="album py-5 bg-light">
+    <div class="album py-5 bg-light">
         <div class="container">
-                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#">Rate the population</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarText">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/evolve/album/">My Album</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Population</a>
-                        </li>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-                    </ul>
 
-                    <div>
-                        <input id="sample_size_input" type="number" min="1" max="99" value="3" class=""> </input>
-                        <button id="get_more" type="button" class="btn btn-primary btn-sm">Get more</button>
-                        <button type="button" class="btn btn-secondary btn-sm">Evolve</button>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Population</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/evolve/album/">My Album</a>
+                    </li>
 
-                    </div>
+
+                </ul>
+
+                <div>
+                    <input id="sample_size_input" type="number" min="1" max="99" value="3" class=""> </input>
+                    <button id="get_more" type="button" class="btn btn-primary btn-sm">Get more</button>
+                    <button type="button" class="btn btn-secondary btn-sm">Evolve</button>
+
                 </div>
+
             </nav>
 
 
 
 
-          <div  id="drawing-section" class="row">
+            <div  id="drawing-section" class="row">
 
-  <evo-drawing v-for="drawing in drawings" v-bind:drawing="drawing"  v-bind:key="drawing.id"> </evo-drawing>
+                <evo-drawing v-for="drawing in drawings" v-bind:drawing="drawing"  v-bind:key="drawing.id"> </evo-drawing>
 
             </div>
-          </div>
         </div>
-      </div>
+    </div>
+    </div>
 
 
-            <div class="container">
+    <div class="container">
 
 
 

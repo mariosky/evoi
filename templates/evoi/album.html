@@ -34,7 +34,9 @@
 
                   <div  id="drawing-section" class="row">
 
-                      <evo-drawing v-for="drawing in drawings" v-bind:drawing="drawing"  v-bind:key="drawing.id"> </evo-drawing>
+                      <evo-drawing v-for="(drawing, index) in drawings" v-bind:drawing="drawing"
+                                   v-bind:key="drawing.id"
+                                   v-on:delete-row="delete_drawing(index)"> </evo-drawing>
 
                   </div>
               </div>
@@ -71,7 +73,7 @@
 
                         <div class="btn-group">
                             <button type="button" class="btn btn-sm btn-outline-secondary">View Details</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Remove</button>
+                            <button v-on:click="$emit('delete-row')" type="button" class="btn btn-sm btn-outline-secondary">Remove</button>
                             <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">
                                 Save

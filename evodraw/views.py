@@ -121,44 +121,43 @@ def add_to_collection(request):
     if request.user.is_authenticated and request.user != 'AnonymousUser':
         c = None
         try:
-            c = Collection.objects.filter(name="MyAlbum",visibility=json_data['collection_name'],
+            c = Collection.objects.filter(name="MyAlbum",visibility='Public',
                            owner=request.user).get()
 
         except ObjectDoesNotExist:
             print('ObjectDoesNotExist')
-            c =  Collection.objects.create(name="MyAlbum",visibility=json_data['collection_name'],
+            c =  Collection.objects.create(name="MyAlbum",visibility='Public',
                                            owner=request.user,
                                            )
             c.save()
 
-        #IF DOES NOT EXISTS
-        Collection_Individual.objects.update_or_create(collection=c, individual_id=json_data['individual_id'])
-
-        return HttpResponse({}, content_type='application/json')
+        Collection_Individual.objects.update_or_create( collection=c , individual_id=json_data['individual_id'],
+           defaults={ 'collection':c , 'individual_id':json_data['individual_id'],'visibility':json_data['visibility']})
+        data = json.dumps({"result": "Inserted", "error": None})
+        return HttpResponse(data, content_type='application/json')
     else:
-        return HttpResponse({}, content_type='application/json')
+        data = json.dumps({"result": "Not Inserted", "error": "You need to Authenticate"})
+        return HttpResponse(data, content_type='application/json')
 
 
 @require_http_methods(["POST"])
-def remove_from_collection(request):
+def remove_from_my_album(request):
     json_data = json.loads(request.body)
     if request.user.is_authenticated and request.user != 'AnonymousUser':
-        c = None
         try:
-            c = Collection.objects.filter(name=json_data['collection_name'],visibility=json_data['collection_name'],
-                           owner=request.user).get()
+            Collection_Individual.objects.filter(collection__name='MyAlbum',
+                                                 collection__owner=request.user,
+                                                 individual_id=json_data['individual_id']).delete()
 
         except ObjectDoesNotExist:
-            print('ObjectDoesNotExist')
-            c =  Collection.objects.create(name=json_data['collection_name'],visibility=json_data['collection_name'],
-                                           owner=request.user,
-                                           )
-            c.save()
-        Collection_Individual.objects.create(collection=c, individual_id=json_data['individual_id'])
+            print('Can not Delete')
 
-        return HttpResponse({}, content_type='application/json')
+
+        data = json.dumps({"result": "Deleted", "error": None})
+        return HttpResponse(data, content_type='application/json')
     else:
-        return HttpResponse({}, content_type='application/json')
+        data = json.dumps({"result": "Not Deleted", "error": "You need to Authenticate"})
+        return HttpResponse(data, content_type='application/json')
 
 
 def evospace(request):

@@ -132,7 +132,7 @@ async function add_to_collection(endpoint, individual_id, name)
 {
     const options = {
         method: 'POST',
-        body: JSON.stringify({individual_id: individual_id, collection_name:name}),
+        body: JSON.stringify({individual_id: individual_id, visibility:name}),
         headers: {
             "X-CSRFToken": getCookie('csrftoken'),
             'Content-Type': 'application/json'
@@ -145,4 +145,5 @@ async function add_to_collection(endpoint, individual_id, name)
   return data.result;
 
 }
+
 

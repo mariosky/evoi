@@ -19,9 +19,17 @@ class Collection(models.Model):
         return u'%s %s' % (self.name, self.description)
 
 
+
 class Collection_Individual(models.Model):
+    V_TYPE = (
+        (u'PR', u'Private'),
+        (u'PU', u'Public'),
+        )
     collection = models.ForeignKey(Collection, related_name='individuals', on_delete=models.CASCADE)
     individual_id = models.CharField(max_length=60)
+    visibility = models.CharField(max_length=16, choices=V_TYPE)
+    date_added = models.DateTimeField(default=now)
     added_from = models.ForeignKey(Collection, null=True, on_delete=models.SET_NULL)
     from_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    date_added = models.DateTimeField(default=now)
+    class Meta:
+        unique_together = ('collection', 'individual_id',)

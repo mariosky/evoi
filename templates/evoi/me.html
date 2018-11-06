@@ -1,0 +1,127 @@
+{% extends "evoi/base.html" %}
+{% load gravatar %}
+        {% block content %}
+
+
+<div class="container">
+        <div class="row">
+
+
+            <div class="col-sm-2">
+                <img src="{% gravatar_url user.email 150 %}"  class="img-fluid" alt="Gravatar">{% csrf_token %}
+
+                <h4 class="text-lowercase text-left">{{ user.first_name }} {{ user.last_name }}</h4>
+                <p class="text-lowercase text-left">  <span class="text-muted">{{ user.email }}</span></p>
+
+                <a   href="http://gravatar.com" class="btn btn-secondary"> <i class="fa fa-camera"></i> Cambia tu foto  </a>
+
+            </div>
+            <div class="col-sm-6">
+
+                <h3>Perfil básico</h3>
+
+                <form  id="login_form">
+                    <div class="form-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               value="{{ user.username }}" placeholder="Usuario" readonly>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Nombre</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name"
+                               value="{{  user.first_name }}" placeholder="Nombre">
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Apellido</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name"
+                               value="{{  user.last_name }}" placeholder="Apellido">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Correo electrónico</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" name="email"
+                               value="{{ user.email }}">
+                    </div>
+
+
+                {% if not user.email %}
+                    <div class="container py-2">
+                        <div class="alert alert-danger" role="alert">
+                            Debes tener un correo registrado para poder recuperar la contraseña y para establecer tu
+                            foto de perfil en Gravatar.
+                        </div>
+
+                    </div>
+                {% endif %}
+                    <button id="form-submit" type="submit" class="btn btn-primary"> Actualizar Perfil</button>
+
+
+
+
+                </form>
+
+
+
+            </div>
+
+        </div>
+    </div>
+
+ {% endblock content %}
+{% block scripts %}
+
+
+
+
+<script>
+        function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+    function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+               // crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        var csrftoken = getCookie('csrftoken');
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+$("#login_form").on("submit", function (event) {
+                  event.preventDefault();
+                  $.ajaxSetup({
+                      //crossDomain: false, // obviates need for sameOrigin test
+                      beforeSend: function (xhr, settings) {
+                          if (!csrfSafeMethod(settings.type)) {
+                              var csrftoken = getCookie('csrftoken');
+                              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                          }
+                      }
+                  });
+                  $.post('/me/', $("#login_form").serialize(),
+                          function (data) {
+                              alert('Se han actualizado tus datos');
+                              console.log("succsess update");
+                          }
+                  );
+              });
+
+ </script>
+
+{% endblock scripts %}

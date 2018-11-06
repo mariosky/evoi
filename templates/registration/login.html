@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-2">
 
 
    <div class="col-xs-12 col-md-6 col-md-offset-3">
@@ -16,7 +16,7 @@
 
     <div class="alert alert-danger alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        <p>Inténtalo de nuevo, el usuario y contraseña no coinciden.</p>
+        <p>Please try again, user name and password do not match.</p>
     </div>
 
 {% endif %}
@@ -45,12 +45,12 @@
                {{ form.password.label_tag}}
                {% render_field form.password class="form-control" %}
 
-        <label class="sign-in-reset control-label"> <a href="/accounts/password_reset"> <small> ¿Se te olvidó tu contraseña? </small> </a> </label>
+        <label class="sign-in-reset control-label"> <a href="/accounts/password_reset"> <small> ¿Forgot your password? </small> </a> </label>
 
            <div class="row">
 
                <div class="col-xs-12 col-md-8 col-md-offset-2" >
-                <button type="submit" class="sign-in-btn btn btn-success btn-block " >Inicia Sesión</button>
+                <button type="submit" class="sign-in-btn btn btn-success btn-block " >Log in</button>
                </div>
            </div>
 
@@ -61,8 +61,8 @@
 
          <div class="col-xs-12 col-md-8 col-md-offset-2" >
                      <div id="register-box" class="form-group">
-            <h5> Si aún no te haz registrado: </h5>
-            <a class="btn btn-primary  btn-block"  href="/register">Crea tu cuenta</a>
+            <h5> Please: </h5>
+            <a class="btn btn-primary  btn-block"  href="/register">Sign up</a>
 
         </div>
                </div>

@@ -41,7 +41,8 @@ DATABASES = {
 
 }
 
-
+LOGOUT_REDIRECT_URL ="/"
+LOGIN_REDIRECT_URL  ="/"
 ALLOWED_HOSTS =  env.list('ALLOWED_HOSTS')
 
 
@@ -83,6 +84,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+                'gravatar': 'evodraw.templatetags.gravatar',
+            }
         },
     },
 ]

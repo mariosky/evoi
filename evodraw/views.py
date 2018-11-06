@@ -3,6 +3,7 @@ from evodraw.lib.evospace import Population
 # Create your views here.
 import json
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from evodraw.models import Collection, Collection_Individual
 from evodraw.lib.evospace import Individual
@@ -12,10 +13,57 @@ import time
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
 
 EVOLUTION_INTERVAL = 8
 REINSERT_THRESHOLD = 20
 popName = 'pop'
+
+
+@login_required
+def me(request):
+    if request.method == 'GET':
+        return render(request,'evoi/me.html')
+    if request.method == 'POST':
+        try:
+
+            request.user.username = request.POST["username"]
+            request.user.first_name = request.POST["first_name"]
+            request.user.last_name = request.POST["last_name"]
+            request.user.email = request.POST["email"]
+            request.user.save()
+
+        except:
+
+            return JsonResponse({"error": True})
+
+        return JsonResponse({"success": True, "error": None})
+
+
+
+def register(request):
+    if request.method == 'POST':
+        f = UserCreationForm(request.POST)
+        if f.is_valid():
+            f.save()
+            username = f.cleaned_data.get('username')
+            raw_password = f.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+
+
+            return HttpResponseRedirect('/')
+
+    else:
+        f = UserCreationForm()
+
+    return render(request, 'registration/registration_form.html', {'form': f})
+
 
 
 def welcome(request):

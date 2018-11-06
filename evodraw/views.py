@@ -104,7 +104,7 @@ def get_my_album(request):
             print('ObjectDoesNotExist')
 
 
-        individuals = [Individual(id=i.individual_id).get(as_dict=True) for i in c]
+        individuals = [Individual(id=i.individual_id,visibility=i.visibility ).get(as_dict=True) for i in c]
         result = json.dumps({'data':individuals})
 
 

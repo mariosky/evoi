@@ -32,7 +32,7 @@
                 <div>
                     <input id="sample_size_input" type="number" min="1" max="99" value="3" class=""> </input>
                     <button id="get_more" type="button" class="btn btn-primary btn-sm">Get more</button>
-                    <button type="button" class="btn btn-secondary btn-sm">Evolve</button>
+                    <button id="evolve"  type="button" class="btn btn-secondary btn-sm">Evolve</button>
 
                 </div>
 
@@ -178,8 +178,18 @@
                     });
             });
 
-});
+    });
 
+
+    $("#evolve").click(function () {
+
+        evolve('/evolve/evolve_tournament/')
+            .then( json_response => {
+
+                console.log(json_response);
+                });
+
+    });
 
 
 

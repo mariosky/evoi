@@ -27,6 +27,8 @@ urlpatterns = [
 
     path('register/', views.register, name='register'),
     path('EvoSpace/', views.evospace, name='evospace'),
+
+
     path('', views.welcome ),
     path('evolve/', include(evodraw.urls)),
 

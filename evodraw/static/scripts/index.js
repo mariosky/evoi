@@ -127,6 +127,25 @@ async function getSample(endpoint, sample_size)
 
 }
 
+async function evolve(endpoint)
+{
+    const options = {
+        method: 'POST',
+        body: JSON.stringify({"id": 1 }),
+        headers: {
+            "X-CSRFToken": getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    }
+    const res = await fetch(endpoint, options);
+    let data = await res.json();
+
+ // data = data.collections.map(collection => collection.name);
+  return data;
+
+}
+
+
 
 async function add_to_collection(endpoint, individual_id, name)
 {

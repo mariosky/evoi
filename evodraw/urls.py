@@ -7,6 +7,8 @@ from . import views
 urlpatterns = [
     path('', views.welcome, name='welcome'),
 
+    path('evolve_tournament/', views.evolve_tournament, name="evolve_tournament"),
+
     path('ilike/', views.ilike, name="ilike"),
     path('add_to_collection/', views.add_to_collection, name="add_to_collection"),
     path('remove_from_my_album/', views.remove_from_my_album, name="remove_from_my_album"),

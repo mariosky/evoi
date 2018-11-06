@@ -19,6 +19,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
+from evodraw.lib.colors import evolve_Tournament
 
 EVOLUTION_INTERVAL = 8
 REINSERT_THRESHOLD = 20
@@ -101,6 +102,15 @@ def rating(request):
     json_data = json.loads(request.body)
     add_rating(individual_id = json_data['individual_id'],rating = json_data['rating'],user= request.user.username, timestamp = time.time(), )
     return HttpResponse("ok", content_type='text')
+
+
+
+@require_http_methods(["POST"])
+def evolve_tournament(request):
+    json_data = json.loads(request.body)
+    evolve_Tournament()
+    return JsonResponse({"success": True, "error": None})
+
 
 
 

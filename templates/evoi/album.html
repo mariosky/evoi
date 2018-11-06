@@ -76,14 +76,13 @@
                             <button v-on:click="$emit('delete-row')" type="button" class="btn btn-sm btn-outline-secondary">Remove</button>
                             <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">
-                                Save
+                                [[drawing.visibility]]
                             </button>
                              <div class="dropdown-menu">
                                 <button v-on:click="public" class="dropdown-item" type="button">Public</button>
                                 <button v-on:click="private" class="dropdown-item" type="button">Private</button>
                             </div>
 
-                            <p>[[drawing.visibility]]</p>
 
 
                         </div>

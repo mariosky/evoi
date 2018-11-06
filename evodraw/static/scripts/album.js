@@ -17,18 +17,21 @@ Vue.component('evo-drawing', {
             public: function (event) {
                 add_to_collection('/evolve/add_to_collection/', this.drawing.id, 'Public')
                     .then(data => {
-                            console.log(data);
+
+                            this.drawing.visibility = 'Public';
 
 
                     });
 
 
             },
-            private: function (event) {
+            private: function () {
+
+                     console.log('set private');
                     add_to_collection('/evolve/add_to_collection/', this.drawing.id, 'Private')
                     .then(data => {
-                            console.log(data);
-
+                            alert('Set to private');
+                            this.drawing.visibility = 'Private';
                     });
             },
 
@@ -136,7 +139,23 @@ async function remove_from_my_album(endpoint, individual_id)
 }
 
 
+async function add_to_collection(endpoint, individual_id, name)
+{
+    const options = {
+        method: 'POST',
+        body: JSON.stringify({individual_id: individual_id, visibility:name}),
+        headers: {
+            "X-CSRFToken": getCookie('csrftoken'),
+            'Content-Type': 'application/json'
 
+        }
+    }
+    const res = await fetch(endpoint , options);
+    let data = await res.json();
+
+  return data.result;
+
+}
 
 
 

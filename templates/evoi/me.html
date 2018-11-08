@@ -3,7 +3,7 @@
         {% block content %}
 
 
-<div class="container">
+<div class="container mt-2">
         <div class="row">
 
 
@@ -18,27 +18,27 @@
             </div>
             <div class="col-sm-6">
 
-                <h3>Perfil básico</h3>
+                <h3>Profile</h3>
 
                 <form  id="login_form">
                     <div class="form-group">
-                        <label for="username">Usuario</label>
+                        <label for="username">User Name</label>
                         <input type="text" class="form-control" id="username" name="username"
                                value="{{ user.username }}" placeholder="Usuario" readonly>
 
                     </div>
                     <div class="form-group">
-                        <label for="username">Nombre</label>
+                        <label for="username">Name</label>
                         <input type="text" class="form-control" id="first_name" name="first_name"
                                value="{{  user.first_name }}" placeholder="Nombre">
                     </div>
                     <div class="form-group">
-                        <label for="username">Apellido</label>
+                        <label for="username">Last Name</label>
                         <input type="text" class="form-control" id="last_name" name="last_name"
                                value="{{  user.last_name }}" placeholder="Apellido">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Correo electrónico</label>
+                        <label for="exampleInputEmail1">Email </label>
                         <input type="email" class="form-control" id="exampleInputEmail1" name="email"
                                value="{{ user.email }}">
                     </div>
@@ -47,8 +47,7 @@
                 {% if not user.email %}
                     <div class="container py-2">
                         <div class="alert alert-danger" role="alert">
-                            Debes tener un correo registrado para poder recuperar la contraseña y para establecer tu
-                            foto de perfil en Gravatar.
+                            You must set an email un order to reset your password and have a Gravatar.
                         </div>
 
                     </div>
@@ -116,7 +115,7 @@ $("#login_form").on("submit", function (event) {
                   });
                   $.post('/me/', $("#login_form").serialize(),
                           function (data) {
-                              alert('Se han actualizado tus datos');
+                              alert('Your profile has been updated');
                               console.log("succsess update");
                           }
                   );

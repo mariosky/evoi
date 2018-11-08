@@ -331,6 +331,6 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
 
 
 if __name__ == "__main__":
-    #init_pop(18)
-    evolve_Tournament()
+    init_pop(18)
+    #evolve_Tournament()
     #evolve()

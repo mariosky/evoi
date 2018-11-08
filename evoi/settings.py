@@ -15,7 +15,8 @@ import os
 import django_heroku
 import environ
 
-
+env_file='evoi/.env'
+heroku_deployment = None
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -23,28 +24,37 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False), TEMPLATE_DEBUG=(bool, False)
 )
 
-environ.Env.read_env()
 
+if os.path.isfile(os.path.join(BASE_DIR, env_file)):
+    heroku_deployment = False
+    print('Reading Env file: {0}'.format(env_file))
+    environ.Env.read_env(env_file)
+else:
+    heroku_deployment = False
+    print('Warning!! No .env file: {0}'.format(env_file))
+
+
+environ.Env.read_env()
 DEBUG = env('DEBUG')
 TEMPLATE_DEBUG = env('TEMPLATE_DEBUG')
 SECRET_KEY = env('SECRET_KEY')
-
-
-
 REDIS_URL = env('REDIS_URL')
 DATABASES = {
     'default': env.db(),
 
 }
-
+ALLOWED_HOSTS =  env.list('ALLOWED_HOSTS')
 LOGOUT_REDIRECT_URL ="/"
 LOGIN_REDIRECT_URL  ="/"
-ALLOWED_HOSTS =  env.list('ALLOWED_HOSTS')
+
+
 
 
 # Application definition
@@ -136,4 +146,5 @@ STATIC_URL = '/static/'
 
 
 # Activate Django-Heroku.
-django_heroku.settings(locals())
+if (heroku_deployment):
+    django_heroku.settings(locals())

@@ -32,19 +32,14 @@ def me(request):
         return render(request,'evoi/me.html')
     if request.method == 'POST':
         try:
-
             request.user.username = request.POST["username"]
             request.user.first_name = request.POST["first_name"]
             request.user.last_name = request.POST["last_name"]
             request.user.email = request.POST["email"]
             request.user.save()
-
         except:
-
             return JsonResponse({"error": True})
-
         return JsonResponse({"success": True, "error": None})
-
 
 
 def register(request):
@@ -56,10 +51,7 @@ def register(request):
             raw_password = f.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-
-
             return HttpResponseRedirect('/')
-
     else:
         f = UserCreationForm()
 
@@ -103,15 +95,11 @@ def rating(request):
     add_rating(individual_id = json_data['individual_id'],rating = json_data['rating'],user= request.user.username, timestamp = time.time(), )
     return HttpResponse("ok", content_type='text')
 
-
-
 @require_http_methods(["POST"])
 def evolve_tournament(request):
     json_data = json.loads(request.body)
     evolve_Tournament()
     return JsonResponse({"success": True, "error": None})
-
-
 
 
 @require_http_methods(["POST"])
@@ -125,9 +113,7 @@ def user_collection(request, collection_id):
             from_user = None,
             date_added = now())
         ci.save()
-
         return HttpResponse(request.POST['individual'], content_type='application/json')
-
 
 def user_collections(request):
     if request.user.is_authenticated and request.user != 'AnonymousUser':
@@ -149,8 +135,6 @@ def user_collections(request):
             return HttpResponse(c.id, content_type='application/json')
 
 
-
-
 @require_http_methods(["GET"])
 def get_my_album(request):
     if request.user.is_authenticated and request.user != 'AnonymousUser':
@@ -160,17 +144,11 @@ def get_my_album(request):
 
         except ObjectDoesNotExist:
             print('ObjectDoesNotExist')
-
-
         individuals = [Individual(id=i.individual_id,visibility=i.visibility ).get(as_dict=True) for i in c]
         result = json.dumps({'data':individuals})
-
-
         return HttpResponse(result, content_type='application/json')
     else:
         return HttpResponse({}, content_type='application/json')
-
-
 
 
 @require_http_methods(["POST"])
@@ -225,9 +203,6 @@ def evospace(request):
         method = json_data["method"]
         params = json_data["params"]
         id = json_data["id"]
-
-
-        print(method, params)
         if method == "initialize":
             result = population.initialize()
             data = json.dumps({"result": result, "error": None, "id": id})

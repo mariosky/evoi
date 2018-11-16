@@ -86,6 +86,7 @@ def album(request):
 @require_http_methods(["POST"])
 def ilike(request):
     one_like(request.POST['individual'], request.user.username, time.time())
+
     return HttpResponse("ok", content_type='text')
 
 
@@ -184,7 +185,6 @@ def remove_from_my_album(request):
             Collection_Individual.objects.filter(collection__name='MyAlbum',
                                                  collection__owner=request.user,
                                                  individual_id=json_data['individual_id']).delete()
-
         except ObjectDoesNotExist:
             print('Can not Delete')
 

@@ -6,6 +6,12 @@ from django.conf import settings
 os.environ['DJANGO_SETTINGS_MODULE'] = "evoi.settings"
 
 r = redis.Redis.from_url(settings.REDIS_URL)
+eg = None
+if  hasattr(settings, 'GRAPHENEDB_URL'):
+    from evodraw.lib import EvoGraph
+    eg = EvoGraph(settings.GRAPHENEDB_URL, settings.GRAPHENEDB_BOLT_USER, settings.GRAPHENEDB_BOLT_PASSWORD)
+
+
 
 class Individual:
     def __init__(self, **kwargs):

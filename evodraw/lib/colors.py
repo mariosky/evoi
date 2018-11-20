@@ -78,8 +78,8 @@ def update_fitness(pop):
         ind['current_fitness'] = current_fitness( ratings, views )[0] # average rating, number of ratings
 
 
-def init_pop(populationSize, popName="pop", rangemin=0, rangemax=11, listSize=66):
-    server = Population(popName)
+def init_pop(populationSize, to_graph = False , popName="pop", rangemin=0, rangemax=11, listSize=66):
+    server = Population(popName, to_graph)
     server.initialize()
     for individual in range(populationSize):
         chrome = [random.randint(rangemin, rangemax) for _ in range(listSize)]
@@ -99,9 +99,9 @@ def take_sample(population, size):
     return r
 
 
-def putback_sample(json_data, population_name='pop'):
+def putback_sample(json_data, population_name='pop', to_graph=False):
     sample = None
-    evospace = Population(population_name)
+    evospace = Population(population_name,to_graph = to_graph)
     if not isinstance(json_data, dict):
         sample = json.loads(json_data)
     else:
@@ -250,14 +250,17 @@ def reprieve(individual):
 
 
 
-def evolve_Tournament(sample_size=6, mutation_rate=0.3):
+def evolve_Tournament(pop , to_graph = False, sample_size=6, mutation_rate=0.3):
     # get two samples from evospace
     sample_papa = get_sample(size=sample_size)
     # if None evospace empty? just return
+    print(pop, to_graph, sample_papa)
+
     if not sample_papa:
         return
 
     sample_mama = get_sample(size=sample_size)
+
 
     if not sample_mama:
         return
@@ -266,8 +269,8 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
     # if not return both samples unchanged
     if (MINIMUM_VIEWS):
         if few_views(sample_mama) or few_views(sample_papa):
-            putback_sample(sample_mama["sample_id"], sample_mama["sample"])
-            putback_sample(sample_papa["sample_id"], sample_papa["sample"])
+            putback_sample( sample_mama["sample"], pop)
+            putback_sample( sample_papa["sample"], pop)
             print ("few", few_views(sample_mama), few_views(sample_papa))
             return
 
@@ -326,11 +329,11 @@ def evolve_Tournament(sample_size=6, mutation_rate=0.3):
 
     print(sample_mama["sample_id"], sample_mama["sample"])
 
-    putback_sample(sample_mama)
-    putback_sample(sample_papa)
+    putback_sample(sample_mama, pop, to_graph=to_graph)
+    putback_sample(sample_papa, pop, to_graph=to_graph)
 
 
 if __name__ == "__main__":
-    init_pop(18)
+    init_pop(18, to_graph = True)
     #evolve_Tournament()
     #evolve()

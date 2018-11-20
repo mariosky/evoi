@@ -3,13 +3,18 @@ __author__ = 'mario'
 
 import redis, json, os
 from django.conf import settings
+
+from evodraw.lib.graph import EvoGraph, has_graph
+
 os.environ['DJANGO_SETTINGS_MODULE'] = "evoi.settings"
 
+
 r = redis.Redis.from_url(settings.REDIS_URL)
+
 eg = None
-if  hasattr(settings, 'GRAPHENEDB_URL'):
-    from evodraw.lib import EvoGraph
-    eg = EvoGraph(settings.GRAPHENEDB_URL, settings.GRAPHENEDB_BOLT_USER, settings.GRAPHENEDB_BOLT_PASSWORD)
+if  has_graph():
+    eg = EvoGraph(settings.GRAPHENEDB_BOLT_URL, settings.GRAPHENEDB_BOLT_USER, settings.GRAPHENEDB_BOLT_PASSWORD)
+
 
 
 
@@ -21,11 +26,20 @@ class Individual:
         self.chromosome = kwargs.get('chromosome',[])
         self.__dict__.update(kwargs)
 
-    def put(self, population):
+    def put(self, population, to_graph = False):
         pipe = r.pipeline()
         if pipe.sadd( population, self.id ):
             pipe.set( self.id , self.__dict__ )
             pipe.execute()
+
+            if has_graph() and to_graph:
+                eg.create_individual(self.id)
+                if (hasattr(self, 'mama')):
+                    eg.add_child(self.id, self.mama)
+                if (hasattr(self, 'papa')):
+                    eg.add_child(self.id, self.papa)
+
+
             return True
         else:
             return False
@@ -53,7 +67,7 @@ class Individual:
 
 
 class Population:
-    def __init__(self, name = "pop" ):
+    def __init__(self, name = "pop", to_graph = False):
         self.name = name
         self.sample_counter = self.name+':sample_count'
         self.individual_counter = self.name+':individual_count'
@@ -62,6 +76,7 @@ class Population:
         self.log_queue = self.name+":log_queue"
         #Esta es una propiedad del EvoSpaceServer NO de la poblacion
         self.is_active = False
+        self.to_graph = to_graph
 
     def deactivate(self):
         self.is_active = False
@@ -79,6 +94,10 @@ class Population:
     def initialize(self):
         # Delete all keys with pattern
         #r.flushall()
+
+        if (self.to_graph):
+            eg.delete_all()
+
 
         for key in  r.keys(self.name+':*'):
             r.delete(key)
@@ -164,7 +183,7 @@ class Population:
         if kwargs['id'] is None:
             kwargs['id'] = self.name+":individual:%s" % r.incr(self.individual_counter)
         ind = Individual(**kwargs)
-        ind.put(self.name)
+        ind.put(self.name, to_graph = self.to_graph)
 
     def putback_sample(self,sample, **kwargs ):
         if not isinstance(sample,dict):
@@ -211,5 +230,5 @@ class Population:
 
 
 if __name__ == "__main__":
-    population = Population('pop')
-    population.initialize()
+    population = Population('pop', to_graph = True)
+    #population.initialize()

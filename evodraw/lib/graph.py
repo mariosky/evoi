@@ -1,6 +1,6 @@
 
 from neo4j import GraphDatabase
-
+from django.conf import settings
 
 class EvoGraph(object):
 
@@ -85,6 +85,11 @@ class EvoGraph(object):
                "MERGE (a1)-[:FOLLOWS]->(a2)",
                actor1=actor1, actor2=actor2)
 
+def has_graph():
+    if hasattr(settings, 'GRAPH') and settings.GRAPH and hasattr(settings, 'GRAPHENEDB_URL'):
+        return True
+    else:
+        return False
 
 
 if __name__ == "__main__":

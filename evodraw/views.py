@@ -20,10 +20,19 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from evodraw.lib.colors import evolve_Tournament
+from evodraw.lib.graph import EvoGraph, has_graph
+from django.conf import settings
 
 EVOLUTION_INTERVAL = 8
 REINSERT_THRESHOLD = 20
 popName = 'pop'
+
+
+eg = None
+if  has_graph():
+    eg = EvoGraph(settings.GRAPHENEDB_BOLT_URL, settings.GRAPHENEDB_BOLT_USER, settings.GRAPHENEDB_BOLT_PASSWORD)
+
+
 
 
 @login_required
@@ -37,6 +46,9 @@ def me(request):
             request.user.last_name = request.POST["last_name"]
             request.user.email = request.POST["email"]
             request.user.save()
+            if has_graph():
+                eg.create_actor(request.POST["username"])
+
         except:
             return JsonResponse({"error": True})
         return JsonResponse({"success": True, "error": None})
@@ -51,6 +63,9 @@ def register(request):
             raw_password = f.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
+            if has_graph():
+                eg.create_actor(username)
+
             return HttpResponseRedirect('/')
     else:
         f = UserCreationForm()
@@ -86,7 +101,6 @@ def album(request):
 @require_http_methods(["POST"])
 def ilike(request):
     one_like(request.POST['individual'], request.user.username, time.time())
-
     return HttpResponse("ok", content_type='text')
 
 
@@ -94,12 +108,14 @@ def ilike(request):
 def rating(request):
     json_data = json.loads(request.body)
     add_rating(individual_id = json_data['individual_id'],rating = json_data['rating'],user= request.user.username, timestamp = time.time(), )
+    if has_graph():
+        eg.rate(request.user.username, json_data['individual_id'],json_data['rating'] )
     return HttpResponse("ok", content_type='text')
 
 @require_http_methods(["POST"])
 def evolve_tournament(request):
     json_data = json.loads(request.body)
-    evolve_Tournament()
+    evolve_Tournament('pop', to_graph=True)
     return JsonResponse({"success": True, "error": None})
 
 
@@ -171,6 +187,11 @@ def add_to_collection(request):
         Collection_Individual.objects.update_or_create( collection=c , individual_id=json_data['individual_id'],
            defaults={ 'collection':c , 'individual_id':json_data['individual_id'],'visibility':json_data['visibility']})
         data = json.dumps({"result": "Inserted", "error": None})
+
+        if has_graph():
+            eg.actor_role(request.user.username, json_data['individual_id'], 'OWNS')
+
+
         return HttpResponse(data, content_type='application/json')
     else:
         data = json.dumps({"result": "Not Inserted", "error": "You need to Authenticate"})
